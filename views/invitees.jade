@@ -1,0 +1,47 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            h3 Invitees 
+            p.text-primary Invite List: #{invitationListID} -- #{listName}
+            br
+
+          
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr  
+                            th Badge Number
+                            th Last Name
+                            th First Name
+                            th Email Address
+                            th Notification Number
+                            th Number Format 
+                    tbody
+                        -each result in results
+                            tr
+                                    td=result.BadgeNumber
+                                    td=result.LastName
+                                    td=result.FirstName
+                                    td=result.EmailAddress
+                                    td=result.NotificationNumber
+                                    td=result.NumberFormat
+                                    
+
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });
+                    });
+             
+                

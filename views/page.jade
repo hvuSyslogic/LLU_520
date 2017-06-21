@@ -1,0 +1,13 @@
+
+include mixins
+extends layout
+block content 
+include navbar
+  #wrapper
+    #logo
+      a(href='/')
+        img(src='/images/logo.png')
+    #display
+      p!= content
+      
+    include footer

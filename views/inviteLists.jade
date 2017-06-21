@@ -1,0 +1,46 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            h3 Invitation Lists
+            br
+
+          
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr  
+                            th
+                            th ID
+                            th Name
+                            th Comment
+                            
+                    tbody
+                        -each result in results
+                            tr
+                                    td
+                                        a(href="/invitees/#{result.InvitationListID}") Select
+                                    td=result.InvitationListID
+                                    td=result.ListName
+                                    td=result.ListComment
+                                    
+
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });
+                    });
+            div 
+                br
+                if eventRelatedListing > 0
+                    .btn.btn-primary.btn-lg(href="/eventsUpcoming", role='submit') Skip Invition List

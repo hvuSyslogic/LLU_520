@@ -1,0 +1,21 @@
+
+include mixins
+extends layout
+block content 
+	include navbar
+	#wrapper
+		#logo
+			a(href='/')
+				img(src='/images/logo.png')
+		br
+		blockquote
+			p
+				P!= version
+				P!= clientname
+				P!= computername
+				P!= userdomain
+				P!= dblocation
+			small
+				| For support, please contact us at 
+				cite(title='Source Title') admin@mobss.com
+		include footer

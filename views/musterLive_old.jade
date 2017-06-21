@@ -1,0 +1,109 @@
+include mixins
+extends layout
+block content   
+            include navbar
+
+            head
+                meta(http-equiv='refresh', content='10')
+            h3 Muster in progress
+            .progress.progress-striped.active
+                | #{overallProgress}
+                .progress-bar(style='width: #{overallProgress}')
+            br
+
+           
+
+
+
+            .row
+                .col-md-4.col-sm-6.col-xs-12
+
+                    .panel.panel-danger
+                        .panel-heading
+                            h4.panel-title Zone 1: Refinery East
+                        
+                   
+                    .progress.progress-striped.active
+                        | #{progress[0].progress1}
+                        .progress-bar(style='width: #{progress[0].progress1}')
+                    br
+
+                    .panel.panel-default
+                      .panel-body
+                        h4 Zone 2   
+                    img(src='/images/#{progress[1].statusPicture2}')
+                    .progress.progress-striped.active
+                        | #{progress[1].progress2}
+                        .progress-bar(style='width: #{progress[1].progress2}')
+                    br
+
+                    
+                    .panel.panel-default
+                        .panel-body
+                            h4 Zone 3      
+                    img(src='/images/#{progress[2].statusPicture3}')
+                    .progress.progress-striped.active
+                        | #{progress[2].progress3}
+                        .progress-bar(style='width: #{progress[2].progress3}')
+                    
+                .col-md-4.col-sm-6.col-xs-12
+
+                    .panel.panel-default
+                        .panel-body
+                            h4 Zone 4  
+                    img(src='/images/#{progress[3].statusPicture4}')
+                    .progress.progress-striped.active
+                        | #{progress[3].progress4}
+                        .progress-bar(style='width: #{progress[3].progress4}')
+                    br
+
+                    .panel.panel-default
+                        .panel-body
+                            h4 Zone 5
+                    img(src='/images/#{progress[4].statusPicture5}')
+                    .progress.progress-striped.active
+                        | #{progress[4].progress5}
+                        .progress-bar(style='width: #{progress[4].progress5}')
+                    br
+
+                    .panel.panel-default
+                        .panel-body
+                            h4 Zone 6
+                    img(src='/images/#{progress[5].statusPicture6}')
+                    .progress.progress-striped.active
+                        | #{progress[5].progress6}
+                        .progress-bar(style='width: #{progress[5].progress6}')
+
+                    
+                   
+
+                .col-md-4.col-sm-6.col-xs-12
+                    .well
+                        h4.text-warning Remain unaccounted [#{missingCount}]
+                    div
+                        table#pickle.table.table-hover.table-striped.table-bordered
+                            thead
+                                tr
+                                    th Badge Id
+                                    th First Name
+                                    th Last Name
+                            tbody
+                                -each resEvac in resEvacs
+                                    tr
+                                        td=resEvac.iClassNumber
+                                        td=resEvac.FirstName
+                                        td=resEvac.LastName
+            br
+            br
+            br    
+            
+            include footer
+ 
+        
+   
+ 
+
+
+
+
+    

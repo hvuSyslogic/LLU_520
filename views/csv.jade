@@ -1,0 +1,36 @@
+include mixins
+extends layout
+block content 
+            include navbar
+            .jumbotron
+              h3 Import CSV File 
+          
+             
+
+              
+            #process
+            form.form-signin(class="form-horizontal", method="post")
+              .form-group
+                label.col-lg-2.control-label(type='directory', for='directorySource') File directory
+                .col-lg-10
+                    input#inputcomment.form-control(type='directory', placeholder='C:/Programdata/mysql/mysql server 5.7/uploads/', name='directorySource')
+                label.col-lg-2.control-label(type='directory', for='fileName') Browse for file name
+                .col-lg-10
+                    input#inputcomment.form-control(type='file', name='fileName')
+                label.col-lg-2.control-label(type='text', for='fileNameEntered') OR Enter file name
+                .col-lg-10
+                    input#inputcomment.form-control(type='text', name='fileNameEntered')
+              .form-group
+                .col-lg-10.col-lg-offset-2
+                    //-feb--dont need cancel button as could just use browser back button
+                    //-button.btn.btn-default(type='reset') Cancel
+                    button.btn.btn-lg.btn-primary(type='submit') Process file now
+              
+             
+                    br
+                    h5(style="color: #CC3300;") #{sess.error}
+                    p.text-success #{sess.success}
+             
+             include footer
+
+

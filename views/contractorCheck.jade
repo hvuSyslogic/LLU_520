@@ -1,0 +1,66 @@
+include mixins
+extends layout
+block content   
+
+        include navbar
+
+        .well
+            h4 All card scans for #{contractor}
+        
+        form.form-vertical(method='post')
+               fieldset
+                        .row
+                            .col-md-4.col-sm-6.col-xs-12
+                                .form-group
+                                    label.col-lg-2.control-label(for='inputEmail') Date range:
+                                    .col-lg-10
+                                        input#inputEmail.form-control(type='date', name='startDate', value=displaySearchStart, required='')
+                                .form-group
+                                    .col-lg-10
+                                        input#inputEmail.form-control(type='date', name='endDate', value=displaySearchEnd, required='')
+                                
+                            .col-md-4.col-sm-6.col-xs-12
+                                br
+                                br
+                                button.btn.btn-primary.btn(type="submit") Click to search date range  
+                            
+                               
+                            
+        br 
+        div
+            table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr
+                            th Badge ID
+                            th Scan Date
+                            th Scan Time
+                            th Contractor
+                            th Device ID
+                            th Operator ID
+                            
+                    tbody
+                        -each result in results
+                            tr
+                                    td=result.badgeID
+                                    td=result.scanDate
+                                    td=result.scanTime
+                                    td=result.contractor
+                                    td=result.clientSWID
+                                    td=result.mobssOperator
+            script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+            script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });});
+
+           .col-md-4.col-sm-6.col-xs-12
+                                br
+                                br
+                                button.btn.btn-primary.btn(type="submit") Click to generate report 

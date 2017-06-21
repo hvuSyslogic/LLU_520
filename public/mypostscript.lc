@@ -1,0 +1,16 @@
+<?lc
+put $_POST["data"] into tPass
+
+put $_POST["encoded64"] into tEncoded64
+
+put $HTTP_RAW_POST_DATA into tData
+
+   put tPass into theTime
+   put tData into theData 
+   put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+
+   put "insert into verifyrecords(ScanTime,ScanDate) VALUES(:1,:2)" into tSQL
+   revExecuteSQL tConID, tSQL,"theTime","theData"  
+
+
+?>

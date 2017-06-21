@@ -1,0 +1,51 @@
+include mixins
+
+doctype html
+html
+    head
+        title Command Center
+        meta( charset='utf-8' )
+        meta( http-equiv='X-UA-Compatible', content='IE=edge' )
+        //-meta(http-equiv='content-type', content='application/x-www-form-urlencoding')
+
+        meta( name='viewport', content='width=device-width, initial-scale=1.0' )
+        meta( name='description', content='Baking Bootstrap Snippets with Jade' )
+        //-script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+        script( src='/javascripts/jquery-3.1.1.min.js' )
+           
+        //-script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+        script( src='/bootstrap/js/bootstrap.min.js' )
+
+        //- Bootswatch Theme
+        //-link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
+        link(href="/bootstrap/css/bootstrap.min.css", rel="stylesheet")
+   
+    body(style="padding-bottom:10rem;")
+        .container   
+            .jumbotron
+                        h2 MOBSS Command Center
+                        h4 Log in to manage your device fleet
+
+            form(method='post', enctype='application/x-www-form-urlencoding')          
+                
+                div
+                    br
+                    label(for='user') Username &nbsp;
+                    input(type='text', name='username')
+                    br
+
+
+                    br
+                    label(for='password') Password &nbsp; 
+                    input(type='password', name='password')
+                    br
+                    br
+                    button.btn.btn-lg.btn-primary(type="submit") Log in now
+                    br
+                    br
+
+                    h5(style="color: #CC3300;") #{sess.error}
+                    include footer
+
+
++bootswatch("united")  

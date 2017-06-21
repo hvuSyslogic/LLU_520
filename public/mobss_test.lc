@@ -1,0 +1,14 @@
+<?lc
+put header "Content-Type: text/html" & NumToChar(13)
+
+put $_POST["action"] into tAction
+put tAction
+put urldecode(tAction) into tAction
+
+if tAction = "seconds" then
+	put the seconds into tSecs
+	put "SUCCESS" && tSecs
+end if
+
+put empty
+?>

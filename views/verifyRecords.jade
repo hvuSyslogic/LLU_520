@@ -1,0 +1,50 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            h3 All card-scan events
+            br
+
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr  
+                            th
+                            th Employee ID
+                            th Badge ID
+                            th Scan Date
+                            th Scan Time
+                            th Contractor
+                            th Device ID
+                            th Operator ID
+                            
+                    tbody
+                        -each result in results
+                            tr
+                                    td
+                                        a(href="/verifyCheck/#{result.BadgeID}") All for Badge  
+                                        br
+                                    td=result.EmpID
+                                    td=result.BadgeID
+                                    td=result.ScanDate
+                                    td=result.ScanTime
+                                    td=result.Contractor
+                                    td=result.ClientSWID
+                                    td=result.MobSSOperator
+
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });
+                    });
+           

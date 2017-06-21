@@ -1,0 +1,63 @@
+<?lc
+-- 2017-05-24
+-- for use in CommandCenter 5 (node.js)
+-- plain-text password channel added
+
+put header "Content-Type: application/json; charset=UTF-8"
+put 0 into tRowsInserted
+put $_POST["pass"] into tPass
+put urldecode(tPass) into tPass
+
+if tPass = "agpbrtdk" then
+   read from stdin until empty
+   put it after buffer
+   put urldecode(buffer) into theData
+
+   put offset("data=",theData) + 5 into tStart
+   put char tStart to -1 of theData into theData
+   put the number of lines in theData into theLineCount
+
+   put revOpenDatabase("mysql","mobss-dev005.cgtzydaxfg7j.us-west-2.rds.amazonaws.com","mobss","root","ms_root_XS12") into tConID
+
+   if tConID is a number then
+      set itemDel to tab
+      repeat with n=1 to the number of lines in theData
+         put item 1 of line n of theData into theSwipeDateTime
+         put item 2 of line n of theData into theSwipeDate
+         put item 3 of line n of theData into theSwipeTime
+         put item 4 of line n of theData into theSwipeSeconds
+         put item 5 of line n of theData into theMobileID
+         put item 6 of line n of theData into theOperator
+         if theOperator is empty then put "0"into theOperator
+         put item 7 of line n of theData into theAcsLvlID
+         put item 8 of line n of theData into theBadgeID
+         put item 9 of line n of theData into theAccessResult
+         put item 10 of line n of theData into theBadgeStatusID
+         put item 11 of line n of theData into theEmpID
+
+         put "INSERT into verifyrecords(ScanDateTime,ScanDate,ScanTime,ScanSeconds,ClientSWID,MobSSOperator,AcsLvlID,BadgeID,Result,BadgeStatusID,EMPID) VALUES (:1,:2,:3,:4,:5,:6,:7,:8,:9,:10,:11)" into tSQL
+         revExecuteSQL tConID, tSQL,"theSwipeDateTime","theSwipeDate","theSwipeTime","theSwipeSeconds","theMobileID","theOperator","theAcsLvlID","theBadgeID","theAccessResult","theBadgeStatusID","theEmpID"
+         --put the result into temp
+         if the result is a number then
+            add the result to tRowsInserted
+         else
+            put the result into tInsertionError
+         end if
+      end repeat
+
+      revCloseDatabase tConID
+      --
+      if tInsertionError is empty then
+         if tRowsInserted = theLineCount then
+            put "Success" && tRowsInserted && "rows inserted"
+         else
+            put "Error:" && tRowsInserted && "rows inserted from" && theLineCount && "uploaded"
+         end if
+      else
+         put "Error:" && tInsertionError
+      end if
+   end if
+else
+   put "Error: unauthorised access attempt"
+end if
+?>

@@ -1,0 +1,18 @@
+include mixins
+script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
++nav("MOBSS", "dropdown_menu")
+	+nav_item("/", "active") Home
+	+nav_item('/dashboard') Dashboard
+	+nav_item("/csv") CSV
+	+nav_item("/photos") Photos
+	+nav_item("/photoCheck") Photo Check
+	+nav_item_dropdown("#")(label="Dropdown")
+	+nav_item( "/" ) Home
+		+nav_item( "/dashboard" ) Another action
+		+nav_item( "/csv" ) Something else here
+		+nav_item( "/logout" ) Something else here
+		+nav_divider
+		+nav_header Other functions
+		+nav_item( "#" ) Separated link
+		+nav_item( "#" ) One more separated link

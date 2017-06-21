@@ -1,0 +1,5 @@
+NODE_ENV=development
+CC_USER=mobss
+CC_PASSWORD=LbC510!
+CC_SSL=No
+PORT=3000

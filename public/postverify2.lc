@@ -1,0 +1,34 @@
+<?lc
+#Monday, June 13, 2016 2:42:11 PM
+#open the database-- everything is case sensitive!
+-- version checked 11-22-13
+-- windows ODBC connection uses DSN
+
+--set the errormode to "inline"
+--put empty into buffer
+--repeat until length(buffer)=$CONTENT_LENGTH
+
+
+
+put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+put "Connection is valid: " && tConID & return
+
+if tConID is a number then
+   #Execute SQL
+   put the short time && the short date into theTime
+
+   put "INSERT into verifyrecords(ScanDateTime, ScanDate, ScanTime, ScanSeconds, ClientSWID, MobSSOperator, AcsLvlID, BadgeID, Result, BadgeStatusID, EmpID) VALUES ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")" into tSQL
+      revExecuteSQL tConID, tSQL
+      put the result into temp
+
+   put "Success"  && the result  && theLineCount && "lines" -- or failure
+   
+   
+   
+   
+   #close the database connection
+   revCloseDatabase tConID
+   
+end if
+
+?>

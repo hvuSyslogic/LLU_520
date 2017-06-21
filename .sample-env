@@ -1,0 +1,10 @@
+VERSION=5.0.0
+DB_HOST=mobss-dev001.cgtzydaxfg7j.us-west-2.rds.amazonaws.com
+DB_USER=root
+DB_PASS=ms_root_XS12
+DB_NAME=mobss
+NODE_ENV=development
+CC_USER=command
+CC_PASSWORD=cmd
+CC_SSL=No
+PORT=3000

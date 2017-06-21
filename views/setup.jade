@@ -1,0 +1,72 @@
+
+include mixins
+extends layout
+block content
+            include navbar_setup
+            div
+                form.form-horizontal(method='post')
+                    fieldset
+                        legend Command Center Setup
+                        .form-group
+                            label.col-lg-2.control-label(for='inputEmail') Database Host
+                            .col-lg-10
+                                input#inputEmail.form-control(type='text', placeholder='localhost', name='dbHost', required='')
+                        .form-group
+                            label.col-lg-2.control-label(for='inputPassword') Database Name
+                            .col-lg-10
+                                input#datepicker.form-control(type='text',name='dbName', required='')  
+                            label.col-lg-2.control-label(for='inputPassword') Database User
+                            .col-lg-10
+                                input#timepicker.form-control(type='text', name='dbUser', required='')
+                            label.col-lg-2.control-label(for='inputPassword') Database Password
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', name='dbPass')
+                            label.col-lg-2.control-label(for='inputPassword') Sponsor name
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', placeholder='', name='eventSponsorName')
+                        .form-group
+                          label.col-lg-2.control-label(for='select') Duration
+                          .col-lg-10
+                            select#selecttime.form-control(name='duration')
+                              option 30 minutes
+                              option 1 hour
+                              option 90 minutes
+                              option 2 hours
+                              option 3 hours
+                              option 4 hours
+                              option All day
+                                
+                        .form-group
+                            label.col-lg-2.control-label(for='textArea') Comments
+                            .col-lg-10
+                                textarea#textArea.form-control(rows='3', name='comments')
+                                
+                        .form-group
+                          label.col-lg-2.control-label(for='select') Event type
+                          .col-lg-10
+                            select.form-control(multiple='', name='eventType')
+                              option Meeting
+                              option Training
+                              option Enrollment
+                              option Sales event
+                              option Assembly
+                        .form-group
+                          .col-lg-10.col-lg-offset-2
+                            //-feb--dont need cancel button as could just use browser back button
+                            //-button.btn.btn-default(type='reset') Cancel
+                            button.btn.btn-primary.btn-lg(type='submit') Next
+                       
+                        link(rel='stylesheet', href='/javascripts/jquery-ui.css')         
+                        link(rel='stylesheet', href='/javascripts/jquery.timepicker.css')
+                        
+                        script(src='/javascripts/jquery.timepicker.min.js')
+                        script.
+                          $( function() {
+                          $( "#timepicker" ).timepicker({timeFormat : "G:i:s"});
+                          } );
+
+                        script(src='/javascripts/jquery-ui.js')
+                        script.
+                          $( function() {
+                          $( "#datepicker" ).datepicker({dateFormat: "yy/mm/dd"});
+                          } );

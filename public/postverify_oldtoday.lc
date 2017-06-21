@@ -1,0 +1,98 @@
+<?lc
+#Monday, June 13, 2016 2:42:11 PM
+#open the database-- everything is case sensitive!
+-- version checked 11-22-13
+-- windows ODBC connection uses DSN
+
+--set the errormode to "inline"
+--put empty into buffer
+--repeat until length(buffer)=$CONTENT_LENGTH
+read from stdin until empty
+put it after buffer
+put urldecode(buffer) into theData
+--end repeat	
+
+put the number of lines in theData into theLineCount
+
+
+put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+put "Connection is valid: " && tConID & return
+
+if tConID is a number then
+   #Execute SQL
+   put the short time && the short date into theTime
+   -- need to have a zPostData table, for logging the updates
+   --put revOpenDatabase("mysql","192.156.214.188","cardreader","cardreader","5cardreader") into tConID
+   --put "insert into zPostData(postTime,postData) VALUES(:1,:2)" into tSQL
+   --revExecuteSQL tConID, tSQL,"theTime","theData"	
+   
+   --put the result
+   -- test the result
+   put "Success"  && the result  && theLineCount && "lines" -- or failure
+   
+   -- insert to local mySQL Database
+   set itemDelimiter to tab
+   repeat with n=1 to the number of lines in theData
+      put item 1 of line n of theData into theSwipeDateTime
+      put item 2 of line n of theData into theSwipeDate
+      put item 3 of line n of theData into theSwipeTime
+      put item 4 of line n of theData into theSwipeSeconds
+      put item 5 of line n of theData into theMobileID
+      put item 6 of line n of theData into theOperator
+      if theOperator is empty then put "0"into theOperator -- should NOT be blank
+      put item 7 of line n of theData into theAcsLvlID
+      put item 8 of line n of theData into theBadgeID
+      put item 9 of line n of theData into theAccessResult
+      put item 10 of line n of theData into theBadgeStatusID
+      put item 11 of line n of theData into theEmpID
+      
+      -- put "Local" into theRecordStatus
+      put "INSERT into verifyrecords(ScanDateTime, ScanDate, ScanTime, ScanSeconds, ClientSWID, MobSSOperator, AcsLvlID, BadgeID, Result, BadgeStatusID, EmpID) VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)" into tSQL
+      revExecuteSQL tConID, tSQL,"theSwipeDateTime","theSwipeDate","theSwipeTime","theSwipeSeconds","theMobileID","theOperator","theAcsLvlID","theBadgeID","theAccessResult","theBadgeStatusID","theEmpID"
+      put the result into temp
+   end repeat
+   
+   -- NEED TO CONFIGURE FOR REMOTE DATABASE
+   if false then -- don't do this for now
+      -- insert to sql
+      put "" into tDatabaseAddress -- ie the DSN, e.g. "lenel"
+      put "" into tDatabaseName -- udo_mobss_transaction
+      --put "" into tDatabaseName -- for windows, dbname is in DSN
+      put "" into tDatabaseUser -- was lenel
+      put "" into tDatabasePassword -- was MAP49bCt
+      
+      -- connect to the database
+      put revOpenDatabase("odbc", tDatabaseAddress, tDatabaseName, tDatabaseUser, tDatabasePassword) into tResult
+      -- test result
+      put tResult into connectionIDODBC
+      	
+      set itemDelimiter to tab
+      repeat with n=1 to the number of lines in theData
+         put item 1 of line n of theData into theSwipeDateTime
+         put item 5 of line n of theData into theMobileID
+         put item 6 of line n of theData into theOperator
+         put item 7 of line n of theData into theAcsLvlID
+         put item 8 of line n of theData into theBadgeID
+         put item 9 of line n of theData into theAccessResult
+         put item 10 of line n of theData into theBadgeStatusID
+         put item 11 of line n of theData into theEmpID
+         
+         -- put "Local" into theRecordStatus
+         
+         --      put "INSERT into UDO_MOBSS_TRANSACTION(SWIPE_DATE_TIME,MOBILE_DEVICE_ID,MOBSS_OPERATOR,ACLVLID,BADGEID,RESULT,BadgeStatusID,EMPID) VALUES (convert(datetime,:1,120),:2,:3,:4,:5,:6,:7,:8)" into tSQL
+         --      revExecuteSQL gConnectionIDODBC, tSQL,"theSwipeDateTime","theMobileID","theOperator","theAcsLvlID","theBadgeID","theAccessResult","theBadgeStatusID","theEmpID"
+         put "INSERT into UDO_MOBSS_TRANSACTION(SWIPE_DATE_TIME,MOBILE_DEVICE_ID,MOBSS_OPERATOR,ACLVLID,BADGEID,RESULT,BadgeStatusID,EMPID) VALUES (:1,:2,:3,:4,:5,:6,:7,:8)" into tSQL
+         revExecuteSQL connectionIDODBC, tSQL,"theSwipeDateTime","theMobileID","theOperator","theAcsLvlID","theBadgeID","theAccessResult","theBadgeStatusID","theEmpID"
+         put the result into temp
+         if temp =0 then put "No error" into temp
+      end repeat	
+      #close the database connection
+      revCloseDatabase connectionIDODBC
+   end if
+   
+   #close the database connection
+   revCloseDatabase tConID
+   
+end if
+
+?>

@@ -1,0 +1,54 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            h3 Upcoming events
+            br
+
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr  
+                            th
+                            th Event ID
+                            th Event Name
+                            th Start Date/Time
+                            th Location
+                            th Sponsor
+                            th Duration
+                            th Invite List
+                            th Comments
+                    tbody
+                        -each result in results
+                            tr
+                                    td
+                                        a(href="/eventModify/#{result.EventID}") Edit Event | 
+                                        br
+                                        a(href="/eventAttendance/#{result.EventID}") Attendance
+                                    td=result.EventID
+                                    td=result.EventName
+                                    td=result.EventDateTime
+                                    td=result.EventLocationName
+                                    td=result.EventSponsorName
+                                    td=result.DurationInMins
+                                    td=result.InvitationListID
+                                    td=result.Comments
+
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });
+                    });
+            div 
+                br
+                a.btn.btn-primary.btn-lg(href='eventAdd', role='button') Click to Add Event

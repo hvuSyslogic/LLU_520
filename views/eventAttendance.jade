@@ -1,0 +1,50 @@
+include mixins
+extends layout
+block content   
+
+        include navbar
+
+        form(method='post') 
+            .well
+                h4 Attendance for event ##{eventID} &nbsp -- &nbsp#{eventName}
+        
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr
+                            th First Name
+                            th Last Name
+                            th Badge ID
+                            th In Time
+                            th Out Time
+                            
+                    tbody
+                        -each result in results
+                            tr
+                                    td=result.FirstName
+                                    td=result.LastName
+                                    td=result.iClassNumber
+                                    td=result.InTIme
+                                    td=result.OutTIme
+                                    
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });});
+
+            br
+            
+            .row
+                .col-md-4.col-sm-6.col-xs-12
+                    p.text-danger #{sess.rptError}
+                    p.text-success #{sess.rptSuccess}
+                    button.btn.btn-lg.btn-primary(type="submit") Generate report now
+                

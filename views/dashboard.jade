@@ -1,0 +1,48 @@
+include mixins
+extends layout
+block content   
+            include navbar
+
+
+            
+            h3 Dashboard
+
+            .row
+                
+                .col-md-4.col-sm-6.col-xs-12
+                    .well
+                        | Readers Deployed:
+
+                   
+                    div
+                        table#pickle.table.table-hover.table-striped.table-bordered
+                            thead
+                                tr
+                                    th Reader ID
+                                    th Date Last Used
+                            tbody
+                                -each result in results
+                                    tr
+                                        td=result.ClientSWID
+                                        td=result.ScanDateTime
+                    
+                .col-md-4.col-sm-6.col-xs-12
+                    +panel("Last PACS update", "success") #{metaTime}
+                    +panel("Number of cardholders in MOBSS", "success") #{rowCount}
+                .col-md-4.col-sm-6.col-xs-12
+                    +panel("Next Event", "info") #{rst}
+                //-.col-md-4.col-sm-6.col-xs-12
+                    //-    +panel("Last Muster drill") #{metaTime}
+                    //-    +panel("Employees on site") 11
+
+
+            include footer
+ 
+        
+   
+ 
+
+
+
+
+    

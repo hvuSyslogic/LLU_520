@@ -1,0 +1,29 @@
+<?lc
+put header "Content-Type: text/html" & NumToChar(13)
+
+#Monday, June 13, 2016 2:42:11 PM
+#open the database-- everything is case sensitive!
+
+put "Your company name is" && $_GET["company"]
+put "Your parma are " && stdin
+
+put $_GET["company"] into theTime
+  -- put "yes" into theData 
+  -- put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+  -- put "insert into test(postTime,postData) VALUES(:1,:2)" into tSQL
+  -- revExecuteSQL tConID, tSQL,"theTime","theData"	
+  
+
+  --put "23" into theTime
+   put "yes" into theData 
+   put revOpenDatabase("mysql","mobss.cgtzydaxfg7j.us-west-2.rds.amazonaws.com","mobss","root","ms_root_XS12") into tConID
+
+   if tConID is a number then
+   put "insert into verifyrecords(ScanTime,ScanDate) VALUES(:1,:2)" into tSQL
+   revExecuteSQL tConID, tSQL,"theTime","theData"  
+
+   #close the database connection
+   revCloseDatabase tConID
+   end if
+
+?>

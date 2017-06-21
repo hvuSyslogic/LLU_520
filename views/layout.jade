@@ -1,0 +1,33 @@
+include mixins
+
+doctype
+html
+    head
+        title Command Center 5.0
+        meta( charset='utf-8' )
+        meta( http-equiv='X-UA-Compatible', content='IE=edge' )
+        meta( name='viewport', content='width=device-width, initial-scale=1.0' )
+        meta( name='description', content='Baking Bootstrap Snippets with Jade' )
+        //-script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+        //-script( src='//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js' )
+        script( src='/javascripts/jquery-3.1.1.min.js' )
+        
+        //-script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+        script( src='/bootstrap/js/bootstrap.min.js' )
+
+        //-script(src='https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css')
+        //-script(src='https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js')
+        link( rel="stylesheet" type="text/css" href="/datatables/datatables.min.css")
+        script(type="text/javascript" src="/datatables/datatables.min.js")
+
+        //- Bootswatch Theme
+        //-link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/united/bootstrap.min.css", rel="stylesheet")
+        link(href="/bootstrap/css/bootstrap.min.css", rel="stylesheet")
+
+   
+    body(style="padding-bottom:10rem;")
+        .container   
+            block content
+
+//-Removed this until i set up a directory for each theme in public
+//-+bootswatch("united")  

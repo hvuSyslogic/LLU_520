@@ -1,0 +1,20 @@
+<?lc
+-- 2017-05-24
+-- for use in CommandCenter 5 (node.js)
+-- plain-text password channel added
+
+put header "Content-Type: text/html" & NumToChar(13)
+put $_POST["action"] into tAction
+put $_POST["pass"] into tPass
+put urldecode(tPass) into tPass
+
+if tPass = "agpbrtdk" then
+	if tAction = "seconds" then
+		put the seconds into tSecs
+		put "SUCCESS" && tSecs
+	end if
+else
+	put "Error: unauthorised access attempt"
+end if
+put empty
+?>

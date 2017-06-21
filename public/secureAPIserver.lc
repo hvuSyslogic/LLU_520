@@ -1,0 +1,33 @@
+<?lc
+
+-- put "/home/ua877898/ai_stacks/api-demo-server.livecode" into tLib
+-- put "secureAPIserver.livecode" into tLib
+-- useStack tLib
+put "mobss_webservice.lc" into tLib
+include tLib
+initLib
+
+
+private command useStack pStack
+
+   put pStack into tLib
+
+   if there is NOT a file tLib then
+      put "Stack not found: [" & tLib & "]" into tError
+      put "{" & q("api") & ":{" & q("status_msg") & ":" & q(tError) & "," & q("status_code") & ":100}}" into tJson
+      put tJson
+      quit
+   end if
+
+   try
+      library tLib
+   catch tError
+      put "Error using stack: [" & tLib & "]. Check if this stack is compatible with version" && the version && "of LiveCode." into tError
+      put "{" & q("api") & ":{" & q("status_msg") & ":" & q(tError) & "," & q("status_code") & ":100}}" into tJson
+      put tJson
+      quit
+   end try
+
+end useStack
+
+?>

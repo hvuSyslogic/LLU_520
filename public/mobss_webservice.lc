@@ -1,0 +1,153 @@
+<?lc
+put header "Content-Type: text/html" & NumToChar(13)
+
+local sResponseArray
+-- put "/home/ua877898/ai_stacks/api-demo-server.livecode" into tLib
+-- put "secureAPIserver.livecode" into tLib
+-- useJsonLib tLib
+
+
+private command initLib pStack
+
+   -- put "lcJSON.livecode" into tLib
+   put "libJson.livecode" into tLib
+
+   useJsonLib tLib
+
+
+   put "uv6BDsnBpe5xXpPG" into tApiKey
+   put "http_basic_auth" into tAuthType
+   put "ai_test2" into tDbName
+   put "localhost" into tDbUser
+   put "fnR4c8UDbrwR6UDN" into tDbPass
+
+   if tAuthType = "http_basic_auth" then checkHttpBasicAuth tApiKey
+
+   -- if $_SERVER["REQUEST_METHOD"] <> "POST" then errQuit "Invalid request method"
+
+   put "xxxx" && the seconds
+
+
+
+
+end initLib
+
+
+private command useJsonLib pStack
+
+   put pStack into tLib
+
+   if there is NOT a file tLib then
+      put "Stack not found: [" & tLib & "]" into tError
+      put "{" & q("api") & ":{" & q("status_msg") & ":" & q(tError) & "," & q("status_code") & ":100}}" into tJson
+      put tJson
+      quit
+   end if
+
+   try
+      start using stack "libJson"--tLib
+   catch tError
+      put tError
+      quit
+      put "Error using stack: [" & tLib & "]. Check if this stack is compatible with version" && the version && "of LiveCode." into tError
+      put "{" & q("api") & ":{" & q("status_msg") & ":" & q(tError) & "," & q("status_code") & ":100}}" into tJson
+      put tJson
+      quit
+   end try
+   put "sjon"
+
+end useJsonLib
+
+
+
+private command checkHttpBasicAuth pApiKey
+   put $_SERVER["HTTP_AUTHORIZATION"] into tAuthString
+   if (the number of words of tAuthString <> 2) then err401
+   if (word 1 of tAuthString <> "Basic") then err401
+   put base64Decode(word 2 of tAuthString) into tString
+   if NOT stringsAreEqual(tString, (pApiKey & ":")) then err401
+   if $_SERVER["REDIRECT_STATUS"] = "401" then
+      put empty into tJson
+      outputJson tJson
+   end if
+end checkHttpBasicAuth
+
+
+
+private command okQuit pData
+   delete variable sResponseArray
+   put 200 into sResponseArray["api"]["status_code"]
+   put pData into sResponseArray["data"]
+   put arrayToJson(sResponseArray) into tJson
+   outputJson tJson
+end okQuit
+
+
+private command errQuit pStatusMsg
+   delete variable sResponseArray
+   put 100 into sResponseArray["api"]["status_code"]
+   put pStatusMsg into sResponseArray["api"]["status_msg"]
+   put arrayToJson(sResponseArray) into tJson
+   outputJson tJson
+end errQuit
+
+
+private command outputJson pJson
+   put header "Content-Type: application/json; charset=UTF-8"
+   put header "Content-Length:" && len(pJson)
+   put pJson
+   quit
+end outputJson
+
+
+
+private command err401
+   put header "WWW-Authenticate: Basic realm=" & q("Secure area")
+   put header "Status: 401 Unauthorized"
+   errQuit "401 Unauthorized"
+end err401
+
+
+
+private function stringsAreEqual pString1, pString2
+   set the caseSensitive to true
+   if (len(pString1) = len(pString2)) and (pString1 = pString2) then
+      return true
+   end if
+   return false
+end stringsAreEqual
+
+
+
+private function q pString
+   return quote & pString & quote
+end q
+
+
+
+private function sqlEsc pString, pOptions
+   local tNewString, tNewChar, tNewByte
+   put "92 39 34 8 0 26 10 13 9" into tNums
+   if "like" is among the words of pOptions then put space & "37 95" after tNums
+   repeat for each char tChar in pString
+      put empty into tNewChar
+      repeat for each word tNum in tNums
+         if charToNum(tChar) = tNum then
+            put numToChar(92) & numToChar(tNum) into tNewChar
+            exit repeat
+         end if
+      end repeat
+      if tNewChar = empty then
+         put tChar after tNewString
+      else
+         put tNewChar after tNewString
+      end if
+   end repeat
+   return tNewString
+end sqlEsc
+
+
+
+
+
+?>

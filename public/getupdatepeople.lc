@@ -1,0 +1,21 @@
+<?lc
+-- 2017-05-24
+-- for use in CommandCenter 5 (node.js)
+-- plain-text password channel added
+
+put header "Content-Type: text/html" & NumToChar(13)
+put $_POST["pass"] into tPass
+put urldecode(tPass) into tPass
+
+if tPass = "agpbrtdk" then
+   put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+   if tConID is a number then
+      put "SELECT FirstName,lastName,Title,EmpID,imageName from people order by firstName ASC" into tSQL
+      put revDataFromQuery(tab,return,tConID,tSQL) into theList
+      put theList
+      revCloseDatabase tConID
+   end if
+else
+   put "Error: unauthorised access attempt"
+end if
+?>

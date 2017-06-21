@@ -1,0 +1,35 @@
+include mixins
+extends layout
+block content 
+            include navbar
+            h3 Spot-check that photos and cardholders match
+
+            form(method='post')    
+              h5 Enter employee ID:
+                br
+                input(type='directory', name='empIDSearch', value='#{imageEmpID}')
+                br
+                br
+                button.btn.btn-lg.btn-primary(type="submit") Verify photo now
+                br
+                br
+                img(src=imageFile)
+                br
+              p
+                | Last name: &nbsp
+                a(style="color: #00CC99;") #{imageLast}
+                br
+                | First name: &nbsp
+                a(style="color: #00CC99;") #{imageFirst}
+
+              h5(style="color: #CC3300;") #{sess.photoCheckError}
+              include footer
+
+
+
+
+      
+     
+     
+
+      

@@ -1,0 +1,37 @@
+extends layout
+
+block content
+      br
+      include userbar
+      br
+      h2(style="font-style: bold;") MOBSS CSV File Ingest
+      h5 Load or refresh Command Center with PACS data:
+      br
+      h5 Last updated with PACS information at:
+      h5(style="color: #00CC99;") #{sess.time}
+      br
+      br
+
+      #process        
+        form(method='post') 
+            br     
+            h5 Enter location for CSV file:
+            
+            div
+                br
+                label(for='user') directory &nbsp;
+                input(type='directory', name='directoryName')
+                br
+                br
+                label(for='password') file &nbsp; 
+                input(type='file', name='fileName')
+                br
+                br
+                button.btn.btn-large.btn-primary(type="submit") Process file now
+
+                br
+                br
+                h5(style="color: #CC3300;") #{sess.error}
+                h5(style="color: #00CC99;") #{sess.success}
+
+   

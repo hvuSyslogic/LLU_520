@@ -1,0 +1,32 @@
+<?lc
+put $_POST["pass"] into tPass
+put $_POST["name"] into tName
+put $_POST["secs"] into tSecs
+put $_POST["encoded64"] into tEncoded64
+
+
+if tPass = "sausages" then
+
+   -- do not urldecode anything as the server does this automatically!!!!!
+   put base64decode(tEncoded64) into tBinary
+
+   put tBinary into URL("binfile:" & tName)
+   put the result into tResult
+
+   if tBinary is empty then
+      put "empty" into tr1
+   else
+      put "not empty" into tr1
+   end if
+
+   if there is a file tName then
+	     put "exists" into tr2
+        else
+	      put "does not exist" into tr2
+      end if
+
+   put tSecs && "tbinary is" && tr1 && "-" && "file" && tName && tr2 && "on the server"
+else
+   put "you are unauthorised to access this facility"
+end if
+?>

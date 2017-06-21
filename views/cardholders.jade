@@ -1,0 +1,46 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            
+            h3 List of all cardholders
+            br
+
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr
+                            th Last Name
+                            th First Name
+                            th Cardnumber
+                            th Employee Id
+                            th Title
+                            th Image File
+                    tbody
+                        -each result in results
+                            tr
+                                    td=result.LastName
+                                    td=result.FirstName
+                                    td=result.iClassNumber
+                                    td=result.EmpID
+                                    td=result.Title
+                                    td=result.imageName
+
+                 script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    }); 
+                
+
+
+ 
+        
+    
+ 
+
+
+
+
+    

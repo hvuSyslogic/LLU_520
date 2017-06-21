@@ -1,0 +1,5 @@
+<?lc
+  put header "Content-Type: text/plain" & NumToChar(13)
+
+  write "LiveCode Server is alive" & LF to stdout  # due to LiveCode Server bug!
+?>

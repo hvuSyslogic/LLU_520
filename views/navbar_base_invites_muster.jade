@@ -1,0 +1,27 @@
++nav("MOBSS", "dropdown_menu")
+    +nav_item("/", "active") Home
+    +nav_item('/dashboard') Dashboard
+    +nav_item_dropdown("#")(label="Data Import")
+        +nav_item("/csv") CSV file import
+        +nav_item("/photos") Photo import
+        +nav_item("/photoCheck") Photo Import Verify
+    +nav_item("/cardholders") Cardholders
+    +nav_item_dropdown("#")(label="Events")
+        +nav_item("/events") Past Events & Attendance
+        +nav_item("/eventsUpcoming") Upcoming Events
+        +nav_item("/eventAdd") Add Event
+        +nav_item("/inviteLists") Invite Lists
+        +nav_item("/inviteAdd") Add Invite List
+    +nav_item_dropdown("#")(label="Mustering")
+        +nav_item("/musterHome") Master List
+        +nav_item("/evacuationHome") Evacuation Admin
+        +nav_item("#") Last Muster Report 
+    +nav_item_dropdown("#")(label="Analysis")
+        +nav_item("/verifyRecords") Card-scan records
+        +nav_item("#") Logs
+        +nav_divider
+        +nav_header Mustering
+        +nav_item("/evacuationHome") Evacuation report
+        +nav_item("#") After action reviews 
+        +nav_item("/about") About
+    +nav_item("/logout") Logout
