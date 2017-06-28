@@ -17,7 +17,7 @@ if tPass = "agpbrtdk" then
    put char tStart to -1 of theData into theData
    put the number of lines in theData into theLineCount
 
-   put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+   put revOpenDatabase("mysql","localhost","mobss","root","ms_root_XS12") into tConID
 
    if tConID is a number then
       set itemDel to tab

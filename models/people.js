@@ -39,14 +39,20 @@ module.exports.createPeopleRecord = function(connectionP, firstName, lastName, i
           var _imageName = connectionP.escape(field6);
           var _hasImage = "Yes";
           var _qFields = '(FirstName, LastName, iClassNumber, updateTime, empID, Status, UserName, image, title, imageName, hasImage)';
-          var _qValues = '('+_FirstName+', '+_LastName+', '+_iClassNumber+', "'+_updateTime+'", '+_empID+', '+_Status+', '+_UserName+', "'+_image+'", '+_title+', '+_imageName+', "'+_hasImage+'")';                                                      
+          var _qValues = '('+_FirstName+', '+_LastName+', '+_iClassNumber+', "'+_updateTime+'", "'+_empID+'", '+_Status+', '+_UserName+', "'+_image+'", '+_title+', '+_imageName+', "'+_hasImage+'")';                                                      
 
           //var _qValues = '("'+_FirstName+'", "'+_LastName+'", "'+_iClassNumber+'", "'+_updateTime+'", "'+_empID+'", "'+_Status+'", "'+_UserName+'", "'+_image+'", "'+_title+'", "'+_imageName+'", "'+_hasImage+'")';                                                      
           //var _qUpdates = 'FirstName="'+_FirstName+'", LastName="'+_LastName+'"'+', iClassNumber="'+_iClassNumber+'"'+', updateTime="'+_updateTime+'"'+', empID="'+_empID+'"'+', Status="'+_Status+'"'+', UserName="'+_UserName+'"'+', image="'+_image+'"'+', title="'+_title+'"'+', imageName="'+_imageName+'"'+', hasImage="'+_hasImage+'"';
-          var _qUpdates = 'FirstName='+_FirstName+', LastName='+_LastName+', iClassNumber='+_iClassNumber+', updateTime="'+_updateTime+'", empID='+_empID+', Status='+_Status+', UserName='+_UserName+', image="'+_image+'", title='+_title+', imageName='+_imageName+', hasImage="'+_hasImage+'"';
+          var _qUpdates = 'FirstName='+_FirstName+', LastName='+_LastName+', iClassNumber='+_iClassNumber+', updateTime="'+_updateTime+'", empID="'+_empID+'", Status='+_Status+', UserName='+_UserName+', image="'+_image+'", title='+_title+', imageName='+_imageName+', hasImage="'+_hasImage+'"';
 
-          var parmQuery2 = 'INSERT INTO peeps (Name, occupation) VALUES ("rooby", "tacintyre") ON DUPLICATE KEY UPDATE Name="rooby", occupation="tacintyre"';
-         // var parmQuery3 = 'INSERT INTO people '+_qFields+' VALUES ' +_qValues+ ' ON DUPLICATE KEY UPDATE '+_qUpdates;
+          /**
+           * Quick reference example of how this query should look
+           */
+          //var parmQuery2 = 'INSERT INTO peeps (Name, occupation) VALUES ("rooby", "tacintyre") ON DUPLICATE KEY UPDATE Name="rooby", occupation="tacintyre"';
+          
+          /**
+           * Asssemble the components into the query string
+           */
           var parmQuery3 = 'INSERT INTO people '+_qFields+' VALUES ' +_qValues+ ' ON DUPLICATE KEY UPDATE '+_qUpdates;
           
           return parmQuery3;
@@ -56,6 +62,7 @@ module.exports.createPeopleRecord = function(connectionP, firstName, lastName, i
 
       var strSQL = buildPeopleQuery.insertPeople(firstName, lastName, iClassNumber, title, empID, image);
                 console.log('strSQL= '+ strSQL);  
+                console.log('imageName '+image)
                 var query = connectionP.query(strSQL, function(err, result) {
 
                  if (err) {

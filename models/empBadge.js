@@ -11,7 +11,7 @@ var db = require('./db');
 
 
 
-exports.createEmpBadge = function(connectionEB, badgeID, empID, callback) {
+exports.createEmpBadge = function(connectionEB, badgeID, empID, status, callback) {
       
 
       var buildEmpBadgeQuery = (function() {
@@ -19,8 +19,15 @@ exports.createEmpBadge = function(connectionEB, badgeID, empID, callback) {
   
                     var _EmpID = field2;
                     var _iClassNumber = field1;
-                    var _StatusID = '1';
-                    var _StatusName = 'Active';
+
+                    if (status == "Active"){
+                      var _StatusID = '1';
+                      var _StatusName = 'Active';
+                    }else{
+                      var _StatusID = '2'
+                      var _StatusName = 'Inactive';
+
+                    }
                     
                     var _d = new Date();
                     var _t = _d.getTime(); 
@@ -28,8 +35,8 @@ exports.createEmpBadge = function(connectionEB, badgeID, empID, callback) {
                     
                     
                     var _qFields = '(EmpID, iClassNumber, StatusID, StatusName, updateTime)';
-                    var _qValues = '('+_EmpID+', '+_iClassNumber+', "'+_StatusID+'", "'+_StatusName+'", "'+_updateTime+'")';                                                      
-                    var _qUpdates = 'EmpID='+_EmpID+', iClassNumber='+_iClassNumber+''+', StatusID="'+_StatusID+'"'+', StatusName="'+_StatusName+'"'+', updateTime="'+_updateTime+'"';
+                    var _qValues = '("'+_EmpID+'", '+_iClassNumber+', "'+_StatusID+'", "'+_StatusName+'", "'+_updateTime+'")';                                                      
+                    var _qUpdates = 'EmpID="'+_EmpID+'", iClassNumber='+_iClassNumber+''+', StatusID="'+_StatusID+'"'+', StatusName="'+_StatusName+'"'+', updateTime="'+_updateTime+'"';
                     var parmQuery3 = 'INSERT INTO empbadge '+_qFields+' VALUES ' +_qValues+ ' ON DUPLICATE KEY UPDATE '+_qUpdates;
                     //console.log('parmQuery3= '+parmQuery3);
                     return parmQuery3;
@@ -45,10 +52,10 @@ exports.createEmpBadge = function(connectionEB, badgeID, empID, callback) {
                     console.log(err)
                     sess.error = 'There was a problem updating the mobss database: '+err;
                     connectionEB.end();
-                    callback(null, result);
+                    callback(err, result);
                   } else {
                     //console.log(err);
-                    callback(err, result);
+                    callback(null, result);
                   };
         });//feb--end of connection.query
 

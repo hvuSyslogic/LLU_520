@@ -12,7 +12,7 @@ put urldecode(tData) into tData
 put urldecode(tAction) into tAction
 
 if tPass = "agpbrtdk" then
-	put revOpenDatabase("mysql","localhost","mobss_db","root","MOBSS") into tConID
+	put revOpenDatabase("mysql","mobss","root","ms_root_XS12") into tConID
 	if tConID is a number then
 		switch tAction
 

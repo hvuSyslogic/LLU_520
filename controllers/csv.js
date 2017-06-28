@@ -87,11 +87,29 @@ exports.csvIngest = function(req, res) {
   var fileExtension = path.extname(csvFileName);
   console.log("the file extension is "+fileExtension);
   console.log("the filename BEFORE the INFILE "+csvFileName);
-  //if (fileExtension =='.csv') {
+ 
   /**
-   * Check the file type and look for the one stipulated in the environment variable
+   * Check the file type/extension is correct for the export source specified
+   * in the environmental variables  
    */
-  if (fileExtension ==process.env.FILETYPE) {
+  switch (process.env.EXPORT_SOURCE)
+           {
+             case 'AMAG':
+                
+                 if (fileExtension != '.txt'){
+                  sess.error = 'Invalid file type -- "'+csvFileName+'" -- Import files should be .txt';
+                  res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
+                 }   
+                 break;
+
+              default: 
+                 if (fileExtension != '.csv'){
+                      sess.error = 'Invalid file type -- "'+csvFileName+'" -- Import files should be .csv';
+                      res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
+                     }
+            }
+
+
 	//First check that this is a valid directory and filename
   //addded this line to see what stats can be attained ftom the fs module
   fs.stat(csvFileName, function(error, stats) { console.log(stats); });
@@ -117,12 +135,12 @@ exports.csvIngest = function(req, res) {
                      console.log('Error while performing People INSERT proessing: ' +count+ err);
                      //sess.error = 'There was a problem importing csv file to the people table.  See logs.';
                      
-                        res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success, error : sess.error });
+                     res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success, error : sess.error });
                        //   sess.multiError = 1;
                        //  return
                      
                      } else {
-                        sess.success ='Insert successful'+sess.success;
+                        //sess.success ='Insert successful'+sess.success;
                       
                         res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
                       
@@ -147,14 +165,7 @@ exports.csvIngest = function(req, res) {
 
   });   
 
-  }else{
-   /**
-    * Invalid file type was detected
-    */
-    console.log ("wrong file type.  Expected .txt but file is .csv")
-    sess.error = 'Invalid file type -- "'+csvFileName+'" -- Import files should be .txt';
-    res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
-  }
+  
                 
   }; //feb--end of exports.csvIngest
 

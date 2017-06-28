@@ -20,8 +20,8 @@ var buildAccessLevelQuery = (function() {
                       
                       
                       var _qFields = '(BadgeID, AccsLvlID, AccsLvlName, EmpID, updateTime)';
-                      var _qValues = '('+_BadgeID+', '+_AccsLvlID+', "'+_AccsLvlName+'", '+_EmpID+', "'+_updateTime+'")';                                                      
-                      var _qUpdates = 'BadgeID='+_BadgeID+', AccsLvlID='+_AccsLvlID+''+', AccsLvlName="'+_AccsLvlName+'"'+', EmpID='+_EmpID+', updateTime="'+_updateTime+'"';
+                      var _qValues = '('+_BadgeID+', '+_AccsLvlID+', "'+_AccsLvlName+'", "'+_EmpID+'", "'+_updateTime+'")';                                                      
+                      var _qUpdates = 'BadgeID='+_BadgeID+', AccsLvlID='+_AccsLvlID+''+', AccsLvlName="'+_AccsLvlName+'"'+', EmpID="'+_EmpID+'", updateTime="'+_updateTime+'"';
                       var parmQuery3 = 'INSERT INTO accesslevels '+_qFields+' VALUES ' +_qValues+ ' ON DUPLICATE KEY UPDATE '+_qUpdates;
                       //console.log('parmQuery3= '+parmQuery3);
                       return parmQuery3;

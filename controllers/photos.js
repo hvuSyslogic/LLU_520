@@ -11,8 +11,10 @@ var db = require('../models/db');
 
 
 
-// feb-------HANDLER
-// feb--handler for showing the photo ingest page
+
+//////////////////////////////////////////////////////
+//handler for showing the photo ingest page         //
+//////////////////////////////////////////////////////
 exports.photosHome = function(req, res) {
   sess=req.session;
   sess.photosSuccess = null;
@@ -35,20 +37,18 @@ exports.photosHome = function(req, res) {
   };
 };
 
-// feb--handler for showing the photo ingest page
+///////////////////////////////////////////////////////////////////
+//** handler for processing the photos into the public directory //
+///////////////////////////////////////////////////////////////////
 exports.photosIngest = function(req, res) {
  console.log('am i getting into the ingest handler');
   sess=req.session;
-  //initerrors.initializeErrors('photos');
 // Going to need this to be a user input or a parameter.  User selected from and to but with To showing a default to the
-// wamp/www/photosforreader directory 
 var moveFrom = req.body.directorySource;
-//feb presume the target directory will be express /public directory.  need to shield user from needing to input/know this
-//var moveTo = "C:/Users/bligh/Dropbox/ip_sharp/photosOut";
-//var moveTo = "c:/users/bligh/Dropbox/v_starter/public/photosforreader";
+
 var moveTo = "./public/photosforreader";
-//var moveTo = "C:/Users/bligh/Dropbox/v_starter/public/photosforreader";
-// Loop through all the files in the temp directory
+
+// Loop through all the files in the source directory
 fs.readdir( moveFrom, function( err, files ) {
         if( err ) {
             console.error( "Could not list the directory.", err );
@@ -59,7 +59,6 @@ fs.readdir( moveFrom, function( err, files ) {
         }else{ 
 
         files.forEach( function( file, index ) {
-                // Make one pass and make the file complete
                 var fromPath = path.join( moveFrom, file );
                 var toPath = path.join( moveTo, file );
 
@@ -94,8 +93,14 @@ fs.readdir( moveFrom, function( err, files ) {
 
 
 
-// feb-------HANDLER
-// feb--handler for showing the photo check page
+///////////////////////////////////////////////////
+// handler for showing the photo check page      //
+///////////////////////////////////////////////////
+/**
+ * will put the GALLERY processing in here instead
+ * of photocheck
+ *
+ */
 exports.photoCheck = function(req, res) {
   sess=req.session;
   sess.photoCheckError=null;

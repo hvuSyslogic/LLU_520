@@ -131,7 +131,7 @@ if (process.env.SWEEP_SCHED != "OFF") {
     console.log(new Date());
 
 
-    new CronJob('0 */1 * * * 0-6', function() {
+    new CronJob('0 44 15 * * 0-6', function() {
 
     //new CronJob('* * * * * *', function() {
         beckenbauer.sweeper(function(err,rslt){

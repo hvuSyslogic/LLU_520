@@ -14,6 +14,8 @@ var mysql = require('mysql');
 var fs  = require('fs');
 var clearTables = require('../models/clearTables');
 var emailController = require('./emailController');
+var sharp = require('sharp');
+
 
 
 module.exports.sweeper = function(callback){
@@ -25,7 +27,7 @@ module.exports.sweeper = function(callback){
 	var dbLoc =  process.env.LOCAL_INFILE;
     var sweepFile =  process.env.SWEEP_FILE;
     var fileExtension = path.extname(process.env.SWEEP_FILE);
-    var fileType = process.env.FILETYPE;
+    var exportSource = process.env.EXPORT_SOURCE;
 	var csvFileName = sweepFile;
     var strPrepend = "";
     var strSQL = "";
@@ -125,7 +127,7 @@ module.exports.sweeper = function(callback){
                          * CSV (commman delim)
                          * Quote in enclosure must be escaped
                          */
-                          if (fileType=='.txt'){
+                          if (exportSource=="AMAG"){
 			                  //strSQL = strPrepend+"'"+csvFileName+"'"+" INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (LastName, FirstName, iClassNumber, @dummy, @dummy,EmpID,@dummy, @dummy, imageName ) SET  updateTime ="+_updateTime;
                         	  strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (LastName, FirstName, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy,@dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy, imageName ) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), updateTime ="+_updateTime;
 
@@ -167,7 +169,7 @@ module.exports.sweeper = function(callback){
 		                         * CSV (commman delim)
 		                         * Quote in enclosure must be escaped
 		                         */
-		                          if (fileType=='.txt'){
+		                          if (exportSource=="AMAG"){
                           			  strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, UpdateTime) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), StatusID ='1', StatusName = 'Active'";
 				                      }else{
 				                      strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, iClassNumber) SET StatusID ='1', StatusName = 'Active', updateTime ="+_updateTime;
@@ -192,7 +194,7 @@ module.exports.sweeper = function(callback){
 			                           * Set the empbadge records to INACTIVE for those records with EXPIRY DATE and time less than now
 			                           * Only do this for .txt files -- AMAG format.  Need to generalize this case later.
 			                           */
-									  if (fileType=='.txt'){			                          
+									  if (exportSource=="AMAG"){			                          
 			                            var activeSQL = "select * from empbadge where STR_TO_DATE(updateTime,'%m/%d/%Y')<CURDATE()"
  										query1 = connection.query(activeSQL, function(err, result2) {if (err) {console.log('empbadge INACTIVE didnt work --')}
  										
@@ -220,7 +222,7 @@ module.exports.sweeper = function(callback){
 				                         * CSV (commman delim)
 				                         * Quote in enclosure must be escaped
 				                         */
-				                          if (fileType=='.txt'){
+				                          if (exportSource=="AMAG"){
                           					strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2) SET BadgeID = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
 			                          	  }else{
 			                          	  	strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, BadgeID) SET AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
@@ -267,6 +269,51 @@ module.exports.sweeper = function(callback){
 
 		}
 		});
+
+	//////////////////////////////
+	//** Now process the photos //
+	//////////////////////////////
+
+	var moveFrom = process.env.PICTURE_DIR;
+
+	var moveTo = "./public/photosforreader";
+
+	// Loop through all the files in the source directory
+	fs.readdir( moveFrom, function( err, files ) {
+	        if( err ) {
+	            console.error( "Could not list the picture directory.", err );            
+	            //process.exit( 1 );
+	        }else{ 
+
+	        files.forEach( function( file, index ) {
+	                var fromPath = path.join( moveFrom, file );
+	                var toPath = path.join( moveTo, file );
+
+	                fs.stat( fromPath, function( error, stat ) {
+	                    if( error ) {
+	                        console.error( "Error stating picture file.", error );
+	                        return;
+	                    }
+
+	                    if( stat.isFile() )
+	                        console.log( "'%s' is a file.", fromPath );
+	                    else if( stat.isDirectory() )
+	                        console.log( "'%s' is a directory.", fromPath );
+
+	                    sharp(fromPath).resize(200, 300).toFile(toPath, function(err) {
+	                         if (err) {
+	                            console.log("One of the files is not in expected format (.jpg) "+err);
+	                            return;
+	                         }
+	                    });
+
+	                } );
+	        } );
+	        
+	      }
+	});
+
+
         
 };
 
