@@ -6,6 +6,13 @@ var photos = require('../controllers/photos');
 var invites = require('../controllers/invites');
 var cardholders = require('../controllers/cardholders');
 var events = require('../controllers/events');
+var devices = require('../controllers/devices');
+var connections = require('../controllers/connections');
+var settings = require('../controllers/settings');
+var users = require('../controllers/users');
+
+
+
 var verify = require('../controllers/verify');
 var mustering = require('../controllers/mustering');
 var evacuation = require('../controllers/evacuation');
@@ -16,8 +23,9 @@ var invites = require('../controllers/invites');
 //  res.render('index', { title: 'Express' });
 //});
 
-// feb--GET HOME PAGE
+// display the home page
 router.get('/', cc.home);
+
 // display the list of items
 router.get('/dashboard', cc.dashboardHome);
 // feb--display the csv file ingest screen
@@ -32,6 +40,7 @@ router.post('/photos', photos.photosIngest);
 
 // show photo check page
 router.get('/photoCheck', photos.photoCheck);
+
 // show photo check page
 router.post('/photoCheck', photos.photoCheckProcess);
 // show general pagesrouter.get('/photoCheck', photos.photoCheck);
@@ -53,6 +62,31 @@ router.get('/eventsUpcoming', events.eventsUpComing);
 router.post('/eventAttendance/:eventID', events.writeAttendanceRpt);
 router.get('/eventAddInviteList/:InvitationListID/:eventID', events.eventAddInviteList);
 router.post('/eventChangeInviteList/:InvitationListID/:eventID', events.eventChangeInviteList);
+
+router.get('/connections', connections.connectionsHome);
+router.get('/devices', devices.devicesHome);
+router.get('/deviceModify/:authCode', devices.deviceGetOne);
+router.post('/deviceModify/:authCode', devices.deviceUpdateOne);
+router.get('/deviceHistory/:authCode', devices.deviceGetHistory);
+
+router.get('/settings', settings.settingsHome);
+router.post('/settings', settings.settingsUpdate);
+router.get('/settingsRestart', settings.settingsRestart);
+
+router.get('/users', users.usersHome);
+router.get('/userAdd', users.userAdd);
+
+router.post('/userAdd', users.userAddToDb);
+router.get('/userModify/:userName', users.userGetOne);
+router.post('/userModify/:userName', users.userUpdateOne);
+router.get('/userDelete/:userName', users.userGetOneForDelete);
+router.post('/userDelete/:userName', users.userDeleteOne);
+
+
+
+
+
+
 // Routes for VERIFY (records of scans through the verify app)
 // show events list
 router.get('/verifyRecords', verify.verifyHome);
@@ -79,7 +113,6 @@ router.get('/evacuationHome', evacuation.evacuationHome);
 router.post('/evacuationHome', evacuation.evacuationCSV);
 
 
-// show photo check page
 router.get('/inviteLists', invites.inviteLists);
 router.get('/inviteLists/:eventID', invites.inviteListsforEvent);
 router.get('/inviteListsAdd/:eventID', invites.inviteListsAddforEvent);
@@ -87,8 +120,10 @@ router.get('/inviteListsChange/:eventID/:eventName/:invitationListID', invites.i
 router.get('/inviteAdd', invites.inviteAdd);
 router.post('/inviteAdd', invites.inviteIngest);
 router.get('/invitees/:invitationListID', invites.invitees);
-// show photo check page
+
 router.get('/about', cc.about);
+router.get('/unauthorized', cc.unauthorized);
+
 // show photo check page
 router.get('/setup', cc.about);
 // handle the entry of username.  logging in

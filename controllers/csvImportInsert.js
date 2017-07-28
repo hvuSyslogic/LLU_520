@@ -313,7 +313,8 @@ exports.insertPeople = function(csvFileName, callback) {
                                       /**
                                        * Create the empbadge table using a separate connection 
                                        */
-                                      empBadge.createEmpBadge(connectionEB, _badgeNumber, _empID, function(err,resllt){
+                                      var status="Active";
+                                      empBadge.createEmpBadge(connectionEB, _badgeNumber, _empID, status, function(err,resllt){
                                         if (err){console.log('EmpBadge was NOT created properly')}
                                       });
                                       /**

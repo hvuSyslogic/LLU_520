@@ -26,6 +26,9 @@ html
                         h2 MOBSS Command Center
                         h4 Log in to manage your device fleet
 
+            
+
+
             form(method='post', enctype='application/x-www-form-urlencoding')          
                 
                 div
@@ -44,8 +47,10 @@ html
                     br
                     br
 
-                    h5(style="color: #CC3300;") #{sess.error}
-                    include footer
+            
+
+            h5(style="color: #CC3300;") #{sess.error}
+            include footer
 
 
 +bootswatch("united")  

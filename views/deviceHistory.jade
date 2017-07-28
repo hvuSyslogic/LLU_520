@@ -1,0 +1,38 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            h3 Device history for #{authCode}
+            br
+
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr.success  
+                            th Status
+                            th Status Change Date
+                            th Status Change Comment
+                            
+                    tbody
+                        -each result in results
+                            tr
+                                    td=result.Status
+                                    td=result.StatusDate
+                                    td=result.StatusChangeComment
+
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });
+                    });
+           

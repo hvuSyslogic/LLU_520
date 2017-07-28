@@ -1,0 +1,56 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+           
+            div
+                form.form-horizontal(method='post')
+                    fieldset
+                        legend Delete user
+                        .form-group
+                            label.col-lg-2.control-label(for='inputEmail') User name
+                            .col-lg-10
+                                input#inputEmail.form-control(type='text', disabled='', name='userName', value=results[0].UserName, required='')
+                        .form-group
+                            label.col-lg-2.control-label(for='inputPassword') Password
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text',disabled='', name='password', required='',value=results[0].Password)  
+                            label.col-lg-2.control-label(for='inputPassword') Last name
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', disabled='', name='lastName', required='', value=results[0].LastName)
+                            label.col-lg-2.control-label(for='inputPassword') First name
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', disabled='', placeholder='', name='firstName', value=results[0].FirstName)
+                            label.col-lg-2.control-label(for='inputPassword') Employee ID
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', disabled='', placeholder='', name='empID', value=results[0].EmpID)
+                            label.col-lg-2.control-label(for='inputPassword') Email
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', disabled='', placeholder='', name='userEmail', value=results[0].UserEmail)
+                        .form-group
+                          label.col-lg-2.control-label(for='select') Privilege
+                          .col-lg-10
+                            select#selecttime.form-control(name='privLevel', disabled='')
+                              option(selected=results[0].PrivLevel == '1') User
+                              option(selected=results[0].PrivLevel == '2') Administrator
+                              option(selected=results[0].PrivLevel == '3') Other
+                              
+                                
+                        .form-group
+                          label.col-lg-2.control-label(for='select') Status
+                          .col-lg-10
+                            select.form-control(multiple='', name='status', disabled='')
+                              option(selected=results[0].Status == '1') Active
+                              option(selected=results[0].Status == '2') Suspended
+                              option(selected=results[0].Status == '3') Inactive
+                              
+                        .form-group
+                          .col-lg-10.col-lg-offset-2                         
+                            button.btn.btn-primary.btn-lg(type='submit') Confirm Delete
+                       
+                        link(rel='stylesheet', href='/javascripts/jquery-ui.css')         
+                        link(rel='stylesheet', href='/javascripts/jquery.timepicker.css')
+                        
+                        

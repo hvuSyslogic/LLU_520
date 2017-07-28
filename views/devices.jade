@@ -1,0 +1,50 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            h3 Devices
+            br
+
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr.success 
+                            th
+                            th Auth Code
+                            th Date Issued
+                            th Connection Attempts
+                            th Last Connect
+                            th Current Status
+                            th Device Type
+                            th Operator
+                    tbody
+                        -each result in results
+                            tr
+                                    td
+                                        a(href="/deviceModify/#{result.AuthCode}") Status Edit |
+                                        a(href="/deviceHistory/#{result.AuthCode}")  History
+                                       
+                                    td=result.AuthCode
+                                    td=result.DateIssued
+                                    td=result.ConnectionAttemptCount
+                                    td=result.LastConnect
+                                    td=result.CurrentStatus
+                                    td=result.DeviceType
+                                    td=result.MobssOperator
+
+                script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    });
+                script.
+                    $(document).ready(function() {
+                    $('#pickle tr').click(function() {
+                    var href = $(this).find("a").attr("href");
+                        if(href) {
+                            window.location = href;
+                        }
+                    });
+                    });
+           

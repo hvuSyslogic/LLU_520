@@ -4,7 +4,7 @@
     +nav_item_dropdown("#")(label="Data Import")
         +nav_item("/csv") CSV file import
         +nav_item("/photos") Photo import
-        +nav_item("/photoCheck") Photo Import Verify
+        +nav_item("/photoCheck") Photo gallery
     +nav_item("/cardholders") Cardholders
     +nav_item_dropdown("#")(label="Events")
         +nav_item("/events") Past Events & Attendance
@@ -12,7 +12,15 @@
         +nav_item("/eventAdd") Add Event
         +nav_item("/inviteLists") Invite Lists
         +nav_item("/inviteAdd") Add Invite List
+    +nav_item_dropdown("#")(label="Device Management")
+        +nav_item("/devices") Device List
+        +nav_item("/connections") Connections List
     +nav_item_dropdown("#")(label="Analysis")
         +nav_item("/verifyRecords") Card-scan records
+    +nav_item_dropdown("#")(label="Users")
+        +nav_item("/users") User List
+        +nav_item("/userAdd") Add user
+    +nav_item_dropdown("#")(label="Settings")
+        +nav_item("/settings") Settings
         +nav_item("/about") About
     +nav_item("/logout") Logout

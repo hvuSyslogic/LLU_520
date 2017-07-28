@@ -51,24 +51,24 @@ module.exports.syncGetPastDateFromStamp = function (dateTimeParm) {
 //feb--returns any date string or date object in mobss db format YYYY/MM/DD HH:MM:SS
 module.exports.syncFormatDateStringForDB = function (dateTimeParm) {
   var dt = datetime.create(dateTimeParm);
-  var formatted = dt.format('m/d/y');
+  var formatted = dt.format('Y/m/d H:M:S');
 // e.g. 04/28/2015 21:13:09 
   console.log('inside formatted ' + formatted);
   return formatted;
 };
 
-//feb--returns the current time in mobss db format YYYY/MM/DD HH:MM:SS
+//feb--returns the  time in mobss db format YYYY/MM/DD HH:MM:SS
 module.exports.syncCurrentDateTimeforDB = function () {
   var currentStamp = new Date();
   var dt = datetime.create(currentStamp);
-  var currentForDB = dt.format('Y/m/d H:M:S');
+  var currentForDB = dt.format('Y-m-d H:M:S');
   return currentForDB;
 };
 
 //feb--returns the current date in screen date format YYYY/MM/DD
 module.exports.syncGetDateInDisplayFormat = function (dateParm) {
   var dt = datetime.create(dateParm);
-  var formatForDisplay = dt.format('Y-m-d');
+  var formatForDisplay = dt.format('Y-m-d H:M:S');
   return formatForDisplay;
 };
 

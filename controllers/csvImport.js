@@ -101,27 +101,34 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                   
                   /**
                          * Condition INFILE statement based on incoming file format.
-                         * Currently eith AMAG(comma delim, encosed quote) or 
-                         * CSV (commman delim)
+                         * Currently choices are AMAG(comma delim, encosed quote) or 
+                         * regular CSV (commma delim)... [S2 requires INSERT processing]
                          * Quote in enclosure must be escaped
                          * Also added ImageName to people query and EXPIRY DATE processing to Empbadge table
                          */
-                        if (fileExtension=='.txt'){
-                        strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (LastName, FirstName, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy,@dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy, imageName ) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), updateTime ="+_updateTime;
+                        var exSrc = process.env.EXPORT_SOURCE;
 
-                        //strSQL = strPrepend+"'"+csvFileName+"'"+" INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (LastName, FirstName, iClassNumber, @dummy, @dummy,EmpID ) SET  updateTime ="+_updateTime;
-                        }else{
-                        /**
-                         * \r\n doesnt eork for certain files, possibly files opened, saved of created in notepad.
+                        switch (exSrc)
+                        {
+                           case "AMAG":
+                              strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (LastName, FirstName, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy,@dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy, imageName ) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), updateTime ="+_updateTime;
+
+                              break;
+
+                          default: 
+                          /**
+                         * \r\n doesnt work for certain files, possibly files opened, saved or created in notepad.
                          * Change to \n, which seems to wor for all file types tested
                          * This change was percolated 6/20/17 into the other two tables below and Beckenbauer
+                         * REVERSED this 7/9/17 -- \n alone wasnt working properly.  There seems to be some inconsistency here.
+                         * Needs to be MONITORED.  Possible that git changes line endings on .csv files?  it certianly sends warnings that
+                         * it is checning line endings.  Notes on this can be found in Evernote.
                          */
-
-                        //strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (empID, LastName, FirstName, title, iClassNumber, imageName) SET  updateTime ="+_updateTime;
-                        strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\n' IGNORE 1 LINES (empID, LastName, FirstName, title, iClassNumber, imageName) SET  updateTime ="+_updateTime;
+                              strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (empID, LastName, FirstName, title, iClassNumber, imageName) SET  updateTime ="+_updateTime;
 
                         }
-
+  
+                        
                   //strSQL = "LOAD DATA LOCAL INFILE 'C:/Users/bligh/Dropbox/v_starter/mobss demo6310_1.csv' INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (empID, LastName, FirstName, title, iClassNumber, imageName) SET  updateTime = CURRENT_TIMESTAMP";
                   console.log('People INFILE query'+strSQL);
                   query = connection.query(strSQL, function(err, result) {
@@ -155,15 +162,31 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                          * CSV (commman delim)
                          * Quote in enclosure must be escaped
                          * Added processing for AMAG EXPIRY Date -- Currently using the updateTime field to
-                         * St0re the expiry date from the AMAG/Symmetry txt export file
+                         * Store the expiry date from the AMAG/Symmetry txt export file
                          */
-                        if (fileExtension=='.txt'){
-                          strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, UpdateTime) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), StatusID ='1', StatusName = 'Active'";
+                        
+                         switch (exSrc)
+                        {
+                           case "AMAG":
+                              strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, UpdateTime) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), StatusID ='1', StatusName = 'Active'";
 
-                        //strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, @dummy, iClassNumber, @dummy, @dummy, EmpID) SET StatusID ='1', StatusName = 'Active', updateTime ="+_updateTime;
-                        }else{
-                          strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, iClassNumber) SET StatusID ='1', StatusName = 'Active', updateTime ="+_updateTime;
+                              break;
+
+                          default: 
+                          /**
+                         * \r\n doesnt work for certain files, possibly files opened, saved or created in notepad.
+                         * Change to \n, which seems to wor for all file types tested
+                         * This change was percolated 6/20/17 into the other two tables below and Beckenbauer
+                         * REVERSED this 7/9/17 -- \n alone wasnt working properly.  There seems to be some inconsistency here.
+                         * Needs to be MONITORED.  Possible that git changes line endings on .csv files?  it certianly sends warnings that
+                         * it is checning line endings.  Notes on this can be found in Evernote.
+                         */
+                            strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, iClassNumber) SET StatusID ='1', StatusName = 'Active', updateTime ="+_updateTime;
+
                         }
+
+
+                       
                       query = connection.query(strSQL, function(err, result) {
 
 
@@ -179,7 +202,8 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                            * Set the empbadge records to INACTIVE for those records with EXPIRY DATE and time less than now
                            * Only do this for .txt files -- AMAG format.  Need to generalize this case later.
                            */
-                          if (fileExtension=='.txt'){       
+                          
+                          if (exSrc=='AMAG'){       
                           /**
                            * The AMAG date comes with slashes.  the str_to_date allows us to compare to the SQL operator CURDATE()
                            * Expiry dates are one minute before midnight on a particular day.  if we run the sweep after midnight
@@ -216,11 +240,27 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                          * Quote in enclosure must be escaped
                          * AMAG does not come with a title line, so no IGNORE 1 LINES for that option
                          */
-                          if (fileExtension=='.txt'){
-                          strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2) SET BadgeID = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
-                          }else{
-                          strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, BadgeID) SET AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
-                          }
+                          
+                          switch (exSrc)
+                        {
+                           case "AMAG":
+                              strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2) SET BadgeID = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
+
+                              break;
+
+                          default: 
+                          /**
+                         * \r\n doesnt work for certain files, possibly files opened, saved or created in notepad.
+                         * Change to \n, which seems to wor for all file types tested
+                         * This change was percolated 6/20/17 into the other two tables below and Beckenbauer
+                         * REVERSED this 7/9/17 -- \n alone wasnt working properly.  There seems to be some inconsistency here.
+                         * Needs to be MONITORED.  Possible that git changes line endings on .csv files?  it certianly sends warnings that
+                         * it is checning line endings.  Notes on this can be found in Evernote.
+                         */
+                           strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, BadgeID) SET AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
+
+                        }
+                          
                           query = connection.query(strSQL, function(err, result) {
 
 
@@ -386,7 +426,7 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
                          * working with this termination specification
                          * 
                          */
-                        strSQL = strPrepend+ "'"+csvFileName+"'"+" INTO TABLE Invitees FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\n' IGNORE 1 LINES (@dummy, LastName, FirstName, @dummy, BadgeNumber) SET InvitationListID = LAST_INSERT_ID(), UpdateTime ="+_updateTime;
+                        strSQL = strPrepend+ "'"+csvFileName+"'"+" INTO TABLE Invitees FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, LastName, FirstName, @dummy, BadgeNumber) SET InvitationListID = LAST_INSERT_ID(), UpdateTime ="+_updateTime;
 
                         console.log('here is the infile query '+strSQL);
                         console.log('HERE IS THE CSVFILENAME '+csvFileName);

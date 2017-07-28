@@ -99,6 +99,38 @@ module.exports.getTableLatestUpdateTime = function(table, callback){
         
 };
 
+module.exports.getTableLatestUpdateDate = function(table, callback){
+
+    var connection = mysql.createConnection({
+      host     : process.env.DB_HOST,
+      user     : process.env.DB_USER,
+      password : process.env.DB_PASS,
+      database : process.env.DB_NAME
+  });
+
+  var strSQL =  "SELECT MAX(dateTime) AS 'maxTime' FROM "+table
+  connection.query(strSQL, function(err, rows, fields) {
+       if (!err) {
+        //feb--send back the results via callback (cant 'return results' from asynch fucntions, have to use calllback)
+        
+          console.log('results of join'+JSON.stringify(rows));
+          connection.end();
+          callback(null, rows);
+
+
+          }else{
+              console.log('error with the max query');
+              //send an email to mobss technical support detailing error
+              emailController.sendIncidentEmail('There is a database problem @ db.getlatestupdatetime', function(err,reslt){
+                if (err) {console.log('a problem occurred, attempting to email customer support')}
+              });
+              connection.end();
+              callback(err, rows);
+            }
+        });
+        
+};
+
 
 //*
 //*

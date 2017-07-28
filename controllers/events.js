@@ -271,10 +271,12 @@ module.exports.eventGetOne = function(req,res) {
         }
     });
 };
-}; //feb--end of post handler
+}; // end of handler
 
 
-// handler for showing simple pages
+////////////////////////////////////////////////
+// update the database with the modifications //
+////////////////////////////////////////////////
 exports.eventUpdateOne = function(req, res) {
   sess=req.session;
     var name = req.query.name;

@@ -6,34 +6,107 @@ block content
 
             
             h3 Dashboard
+            .row
+                .col-md-6.col-sm-6.col-xs-12
+
+                    ul.list-group
+                        li.list-group-item
+                            span.badge #{metaTime}
+                            |     Last PACS update
+                        li.list-group-item
+                            span.badge #{rowCount}
+                            |     Number of cardholders
+                        li.list-group-item
+                            span.badge #{totalDevices}
+                            |     Total devices
+                .col-md-6.col-sm-6.col-xs-12
+                    ul.list-group
+                        li.list-group-item
+                            span.badge #{rst}
+                            |     Next event
+                        li.list-group-item
+                            span.badge #{lastMuster}
+                            |     Last muster drill
+                        li.list-group-item
+                            span.badge #{siteCount}
+                            |     Employees on-site
+
+
+
+            
+            .row
+                br
+                p.text-danger BAD CONNECTION ALERTS
+
+               
+                div
+                    table#pickle1.table.table-hover.table-striped.table-bordered
+                        thead
+                            tr.danger
+                                th Reader ID
+                                th Current Status
+                                th Last Connected
+                                th Connect Count
+                                th Activated On
+                        tbody
+                            -each result in results
+                                tr
+                                    td=result.AuthCode
+                                    td=result.CurrentStatus
+                                    td=result.LastConnect
+                                    td=result.ConnectionAttemptCount
+                                    td=result.DateIssued
+                    script.
+                        $(document).ready(function() {
+                        $('#pickle1').DataTable();
+                        });
+                    script.
+                        $(document).ready(function() {
+                        $('#pickle1 tr').click(function() {
+                        var href = $(this).find("a").attr("href");
+                            if(href) {
+                                window.location = href;
+                            }
+                        });
+                        });
 
             .row
                 
-                .col-md-4.col-sm-6.col-xs-12
-                    .well
-                        | Readers Deployed:
+                
+                br
+                p.text-warning BLACK/GRAY LISTED DEVICES
 
-                   
-                    div
-                        table#pickle.table.table-hover.table-striped.table-bordered
-                            thead
+               
+                div
+                    table#pickle.table.table-hover.table-striped.table-bordered
+                        thead
+                            tr.warning
+                                th Reader ID
+                                th Current Status
+                                th Last Connected
+                                th Connect Count
+                                th Activated On
+                        tbody
+                            -each result in results
                                 tr
-                                    th Reader ID
-                                    th Date Last Used
-                            tbody
-                                -each result in results
-                                    tr
-                                        td=result.ClientSWID
-                                        td=result.ScanDateTime
-                    
-                .col-md-4.col-sm-6.col-xs-12
-                    +panel("Last PACS update", "success") #{metaTime}
-                    +panel("Number of cardholders in MOBSS", "success") #{rowCount}
-                .col-md-4.col-sm-6.col-xs-12
-                    +panel("Next Event", "info") #{rst}
-                //-.col-md-4.col-sm-6.col-xs-12
-                    //-    +panel("Last Muster drill") #{metaTime}
-                    //-    +panel("Employees on site") 11
+                                    td=result.AuthCode
+                                    td=result.CurrentStatus
+                                    td=result.LastConnect
+                                    td=result.ConnectionAttemptCount
+                                    td=result.DateIssued
+                    script.
+                        $(document).ready(function() {
+                        $('#pickle').DataTable();
+                        });
+                    script.
+                        $(document).ready(function() {
+                        $('#pickle tr').click(function() {
+                        var href = $(this).find("a").attr("href");
+                            if(href) {
+                                window.location = href;
+                            }
+                        });
+                        });
 
 
             include footer

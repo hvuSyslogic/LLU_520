@@ -1,0 +1,165 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+            
+
+           
+            div
+                form.form-horizontal(method='post')
+                    fieldset
+                        legend Settings
+                        .form-group
+                            label.col-lg-2.control-label(for='inputPassword') Version
+                            .col-lg-10
+                                input#inputEmail.form-control(disabled='', type='text', name='version', value=version)
+                            label.col-lg-2.control-label(for='disabledInput') Mode
+                            .col-lg-10
+                                input#inputEmail.form-control(disabled='', type='text', placeholder='', name='env', value=env)
+                        .form-group
+                            label.col-lg-2.control-label(for='inputPassword') Database host
+                            .col-lg-10
+                                input#datepicker.form-control(type='text',name='dbHost', required='', value=dbHost)  
+                            label.col-lg-2.control-label(for='inputPassword') Database name
+                            .col-lg-10
+                                input#timepicker.form-control(type='text', name='dbName', value=dbName)
+                            label.col-lg-2.control-label(for='inputPassword') Database user
+                            .col-lg-10
+                                input#timepicker.form-control(type='text', name='dbUser', value=dbUser)
+                            label.col-lg-2.control-label(for='inputPassword') Database password
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', placeholder='', name='dbPass', value=dbPass)
+                            
+                            label.col-lg-2.control-label(for='inputPassword') Port
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', placeholder='', name='port', value=port)
+                        
+                        .form-group
+                            label.col-lg-2.control-label Data in transit
+                            .col-lg-10
+                              .radio
+                                label
+                                  input#optionsRadios1(name='sslRadios', type='radio', checked='', value='YES')
+                                  |            TLS/SSL
+                              .radio
+                                label
+                                  input#optionsRadios2(name='sslRadios', type='radio', value='NO')
+                                  |            Non-SSL
+                        .form-group
+                            label.col-lg-2.control-label(for='disabledInput') Cert name
+                            .col-lg-10
+                                input#inputEmail.form-control(type='text', placeholder='', name='certNameSet', value=certName)
+                            label.col-lg-2.control-label(for='disabledInput') Cert passphrase
+                            .col-lg-10
+                                input#inputEmail.form-control(type='text', placeholder='', name='certPassSet', value=certPass)
+                        .form-group
+                            label.col-lg-2.control-label Data Import options
+                            .col-lg-10
+                              .radio
+                                label
+                                  input#optionsRadios3(name='infileRadioDisabled', type='radio', checked=infileDis == 'NO', value='NO')
+                                  |            INFILE
+                              .radio
+                                label
+                                  input#optionsRadios4(name='infileRadioDisabled', type='radio', checked=infileDis == 'YES', value='YES')
+                                  |            INFILE disabled
+                        .form-group
+                            label.col-lg-2.control-label MySQL INFILE settings
+                            .col-lg-10
+                              .radio
+                                label
+                                  input#optionsRadios13(name='infileRadioLocal', type='radio', checked=infileLocal== 'ON', value='ON')
+                                  |            LOCAL INFILE
+                              .radio
+                                label
+                                  input#optionsRadios14(name='infileRadioLocal', type='radio', checked=infileLocal == 'OFF', value='OFF')
+                                  |            LOCAL INFILE disabled
+                        .form-group
+                            label.col-lg-2.control-label Data Source 
+                            .col-lg-10        
+                              .radio
+                                label
+                                  input#optionsRadios23(name='exportRadios', type='radio', checked=exportSource == 'AMAG', value='AMAG')
+                                  |            AMAG 
+                              .radio
+                                label
+                                  input#optionsRadios24(name='exportRadios', type='radio', checked=exportSource == 'S2', value='S2')
+                                  |            S2
+                              .radio
+                                label
+                                  input#optionsRadios25(name='exportRadios', type='radio', checked=exportSource == 'OTHER', value='OTHER')
+                                  |            Other
+                       
+                        .form-group
+                            label.col-lg-2.control-label Sweep 
+                            .col-lg-10
+                              .radio
+                                label
+                                  input#optionsRadios3(name='sweepRadios', type='radio', checked=sweep == 'ON', value='ON')
+                                  |            ON
+                              .radio
+                                label
+                                  input#optionsRadios4(name='sweepRadios', type='radio', checked=sweep == 'OFF', value='OFF')
+                                  |            OFF
+
+                        .form-group
+                            label.col-lg-2.control-label(for='disabledInput') Sweep file (full path)
+                            .col-lg-10
+                                input#inputEmail.form-control(type='text', placeholder='', name='sweepFile', value=sweepDir)
+                            label.col-lg-2.control-label(for='disabledInput') Picture directory
+                            .col-lg-10
+                                input#inputEmail.form-control(type='text', placeholder='', name='picDir', value=pictureDir)    
+
+                        .form-group
+                            label.col-lg-2.control-label Muster 
+                            .col-lg-10
+                              .radio
+                                label
+                                  input#optionsRadios3(name='musterRadios', type='radio', checked=muster == 'ON', value='ON')
+                                  |            ON
+                              .radio
+                                label
+                                  input#optionsRadios4(name='musterRadios', type='radio', checked=muster == 'OFF', value='OFF')
+                                  |            OFF
+                        
+                        .form-group
+                          .col-lg-10.col-lg-offset-2
+                            //-feb--dont need cancel button as could just use browser back button
+                            //-button.btn.btn-default(type='reset') Cancel
+                            
+                            button.btn.btn-primary.btn-lg(type='submit') Submit & Restart
+        
+                            p.text-danger #{sess.error}
+                          
+
+                            if sess.success
+                              div 
+                                br
+                                p.text-warning #{sess.success}
+                                .col-md-4.col-sm-6.col-xs-12
+                                    form.form-signin(class="form-horizontal", Action="/settingsRestart", method="get")
+                                        button.btn.btn-warning.btn-lg(type="submit") Restart now 
+
+                                .col-md-4.col-sm-6.col-xs-12
+                                    form.form-signin(class="form-horizontal", Action="/dashboard", method="get")
+                                        button.btn.btn-warning.btn-lg(type="submit") Restart later 
+                           
+                            include footer
+                       
+                        link(rel='stylesheet', href='/javascripts/jquery-ui.css')         
+                        link(rel='stylesheet', href='/javascripts/jquery.timepicker.css')
+                        
+                        script(src='/javascripts/jquery.timepicker.min.js')
+                        script.
+                          $( function() {
+                          $( "#timepicker" ).timepicker({timeFormat : "H:i:s"});
+                          } );
+
+                        script(src='/javascripts/jquery-ui.js')
+                        script.
+                          $( function() {
+                          $( "#datepicker" ).datepicker({dateFormat: "yy-mm-dd"});
+                          } );
+
+

@@ -9,7 +9,6 @@ var fs  = require('fs');
 var csvParser = require('csv-parse');
 var path = require( 'path' );
 var datetime = require('./datetime');
-var readers = require('../models/readers');
 var db = require('../models/db');
 var csvProcess = require('./csvProcess');
 

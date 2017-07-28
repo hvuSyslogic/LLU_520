@@ -2,27 +2,21 @@ include mixins
 extends layout
 block content 
             include navbar
-            h3 Spot-check that photos and cardholders match
+            h3 Cardholder picture gallery
 
             form(method='post')    
-              h5 Enter employee ID:
+              h5 Last Name:
+                &nbsp
+                input(type='directory', name='empIDSearch', value='#{imageLast}')
+                &nbsp
+                button.btn.btn-primary(type="submit") Search gallery
                 br
-                input(type='directory', name='empIDSearch', value='#{imageEmpID}')
-                br
-                br
-                button.btn.btn-lg.btn-primary(type="submit") Verify photo now
-                br
-                br
-                img(src=imageFile)
-                br
-              p
-                | Last name: &nbsp
-                a(style="color: #00CC99;") #{imageLast}
-                br
-                | First name: &nbsp
-                a(style="color: #00CC99;") #{imageFirst}
-
-              h5(style="color: #CC3300;") #{sess.photoCheckError}
+                h5(style="color: #CC3300;") #{sess.photoCheckError}
+                h5(style="color: #CC3300;") #{sess.photoCheckError1}
+                each image in images
+                 img(src=image) 
+              br
+              br
               include footer
 
 

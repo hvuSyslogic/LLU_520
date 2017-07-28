@@ -51,6 +51,7 @@ var routes = require('./routes/index');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -84,8 +85,11 @@ app.use(session({secret: 'boris',
 
 
 app.use(bodyParser.urlencoded({limit: '50mb', extended: false, parameterLimit:50000}));
-//feb -- i deleted thes following two lines
+
+
 app.use('/', routes);
+
+
 //app.use('/users', users);
 
 

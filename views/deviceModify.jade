@@ -1,0 +1,53 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            
+            div
+                form.form-horizontal(method='post')
+                    fieldset
+                        legend Edit device details
+                        .form-group
+                            label.col-lg-2.control-label(for='disabledInput') Auth Code
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', Type='text', name='authCode', value=result[0].AuthCode)
+                            label.col-lg-2.control-label(for='select') Current Status
+                            .col-lg-10
+                              select#selecttime.form-control(name='currentStatus')
+                                option(selected=result[0].CurrentStatus == '1') WHITELIST
+                                option(selected=result[0].CurrentStatus== '2') BLACKLIST
+                                option(selected=result[0].CurrentStatus== '3') GRAYLIST
+                            label.col-lg-2.control-label(for='textArea') Comments
+                            .col-lg-10
+                                textarea#textArea.form-control(rows='3', name='comments')
+                        .form-group
+                            label.col-lg-2.control-label(for='disabledInput') Date issued
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', type='date', placeholder='', name='dateIssued', value=result[0].DateIssued)
+                            label.col-lg-2.control-label(for='disabledInput') Connection Attempts
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', type='time', placeholder='', name='connectionAttempts', value=result[0].ConnectionAttemptCount)
+                            label.col-lg-2.control-label(for='disabledInput') Last Connect
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', type='date', placeholder='', name='lastConnect', value=result[0].LastConnect)
+                            label.col-lg-2.control-label(for='disabledInput') Device Type
+                            .col-lg-10
+                                select#selecttime.form-control(disabled='', name='deviceType', selected='90 minutes')
+                                  option(selected=result[0].DeviceType == '1') Handheld Cardreader
+                                  option(selected=result[0].DeviceType== '2') Sensor
+                                  option(selected=result[0].DeviceType== '3') Relay
+                           
+                        
+                                
+                        
+                                
+                      
+                        .form-group
+                          .col-lg-10.col-lg-offset-2
+                            //-feb--dont need cancel button as could just use browser back button
+                            //-button.btn.btn-default(type='reset') Cancel
+                            button.btn.btn-primary.btn-lg(type='submit') Update
+                       
+               

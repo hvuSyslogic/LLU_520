@@ -1,0 +1,42 @@
+include mixins
+
+doctype html
+html
+    head
+        title Command Center
+        meta( charset='utf-8' )
+        meta( http-equiv='X-UA-Compatible', content='IE=edge' )
+        //-meta(http-equiv='content-type', content='application/x-www-form-urlencoding')
+
+        meta( name='viewport', content='width=device-width, initial-scale=1.0' )
+        meta( name='description', content='Baking Bootstrap Snippets with Jade' )
+        //-script( src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js' )
+        script( src='/javascripts/jquery-3.1.1.min.js' )
+           
+        //-script( src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js' )
+        script( src='/bootstrap/js/bootstrap.min.js' )
+
+        //- Bootswatch Theme
+        //-link(href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css", rel="stylesheet")
+        link(href="/bootstrap/css/bootstrap.min.css", rel="stylesheet")
+   
+    body(style="padding-bottom:10rem;")
+
+            form(method='post', enctype='application/x-www-form-urlencoding')          
+                
+                .modal
+                  .modal-dialog
+                    .modal-content
+                      .modal-header
+                        button.close(aria-hidden='true', type='button', data-dismiss='modal') ×
+                        h4.modal-title Modal title
+                      .modal-body
+                        p One fine body…
+                      .modal-footer
+                        button.btn.btn-default(type='button', data-dismiss='modal') Close
+                        button.btn.btn-primary(type='button') Save changes
+            h5(style="color: #CC3300;") #{sess.error}
+            include footer
+
+
++bootswatch("united")  

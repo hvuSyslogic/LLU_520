@@ -6,7 +6,7 @@ var fs  = require('fs');
 var csvParser = require('csv-parse');
 var path = require( 'path' );
 var datetime = require('./datetime');
-var readers = require('../models/readers');
+var devices = require('../models/devices');
 var db = require('../models/db');
 var user = require('../models/user');
 var emailController = require('./emailController');
@@ -15,45 +15,31 @@ var emailController = require('./emailController');
 
 
 exports.home = function(req, res){
- 	// feb--initiatie the session and chekc the Id in the console
+ 	// initiatie the session and check the Id in the console
 	sess = req.session;
 	sess.error = null;
+  var setup = "yes"
   
 	console.log("req.session " + JSON.stringify(req.session));
 	console.log("home handler req.session.ID " + req.sessionID);
 
 
-	  // feb--if user is not logged in, send them to home page again
-  	// feb--sess.username is set during the post handler
+	  // if user is not logged in, send them to home page again
+  	// sess.username is set during the post handler
     console.log('home handler ' + sess.username);
     if (typeof sess.username == 'undefined'){
-		res.render('home', { title: 'Command Center 360'});
+		res.render('home', { title: 'Command Center', setup});
     // if user is logged in already, take them straight to the dashboard list
     }else{
 	 
-      //feb- we have user entry at this point and so setting up the credentials here
-      //db.createConnection(function(err,reslt){  
-       // if (err) {
-         // console.log('Error while pErforming common connect query: ' + err);
-         // sess.error = 'Username and/or password are incorrect';
-         // res.render('home', { title: 'Command Center 360'});
-         // callback(err, null);
-        //}else{
-          //process the i/o after successful connect.  Connection object returned in callback
-         // var connection = reslt;
-         // console.log('here is the connnection '+reslt.threadId);
-         // sess.authenticated = true;
-         // console.log('connected as id and now end connect ' + connection.threadId);
-         // connection.end();
-         // res.redirect('/dashboard');
-        
-       // };
-      //});
 
         user.authenticateUser(sess.username, sess.password, function(err, resAu) {
             if (err) {
-              sess.error = 'Username and/or password are incorrect';
-              res.render('home', { title: 'Command Center 360'});
+              console.log(err)
+              if (err == 'Authentication_fail_creds') {sess.error = 'Username and/or password are incorrect'};
+              if (err == 'Authentication_fail_status') {sess.error = 'User authorization not current'};
+
+              res.render('home', { title: 'Command Center'});
             } else {
               res.redirect('/dashboard');
             }
@@ -92,11 +78,16 @@ exports.dashboardHome = function(req, res) {
     if (typeof sess.username == 'undefined') {
 			res.redirect('/');
     }else{
-		//feb--get all records form the people table
+		//get all records from the people table
 		var myPool = require('../models/db').pool;
-		//myPool.getConnection(function(err, connection) {
-    	//if(err) { console.log('didnt get from the pool'+ err); callback(true); return; }
-    readers.getGeneralReaders(function(err, result){ // begin of gets
+		
+    /**
+     * Access the DeviceHeader table to display active readers (whitelist), and to alert
+     * for connections from gray or black listed devices.
+     * Also, list current black and gray listed devices
+     */
+
+    devices.getBadDevices(function(err, result){ // begin of gets
     if (err) {
       console.log('Error while performing query: ' + err);
       //send an email to mobss technical support detailing error
@@ -112,11 +103,14 @@ exports.dashboardHome = function(req, res) {
       res.render('home', { title: 'Command Center 5.0'});
     }
     else {
+      /**
+       * Get the rest of the dashboard information
+       */
 
       
-      db.getTableLatestUpdateTime('people', function(err,reslt){  //LINE AFTEr INSERT
+      db.getTableLatestUpdateTime('people', function(err,reslt){  
         if (err) {
-          console.log('Error while performing roow count query: ' + err);
+          console.log('Error while performing row count query: ' + err);
         }else{
 
           /**
@@ -127,25 +121,85 @@ exports.dashboardHome = function(req, res) {
           var parm = reslt[0].maxTime;
           var parmAsInt = Number(parm)
           var metaTime = new Date(parmAsInt);
-
-          db.getTableRowCount('people', function(err,rslt){
+          metaTime = datetime.syncGetDateInDisplayFormat(metaTime)
+          console.log (metaTime)
+          /**
+           * Get the total number of devices and the total number of cardholders
+           */
+          db.getTableRowCount('DeviceHeader', function(err,rslt9){
           if (err) {
-            console.log('Error while performing roow count query: ' + err);
+            console.log('Error while performing row count query: ' + err);
           }else{
-            var rowCount = rslt[0].rowCount;
-            console.log('row count is '+ rowCount);
-            var envMUSTER = process.env.MUSTER;
+            var totalDevices = rslt9[0].rowCount;
+            db.getTableRowCount('people', function(err,rslt){
+            if (err) {
+              console.log('Error while performing row count query: ' + err);
+            }else{
+              /**
+               * Get the next scheduled event
+               */
+              var rowCount = rslt[0].rowCount;
+              console.log('row count is '+ rowCount);
+              
 
                    db.getNextEvent( function(err,rst){
                       if (err) {
                         console.log('Error while performing next event query: ' + err);
                       }else{
                         var nextEvent = rst;
-                        res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, envMUSTER : envMUSTER, rst : rst});
+                        /**
+                         * Display muster details if muster module installed
+                         */
+                        var envMUSTER = process.env.MUSTER;
+                        var lastMuster = ""
+                        var siteCount = ""
+
+                        if (envMUSTER =='OFF'){
+
+                          lastMuster = 'n/a'
+                          siteCount = 'n/a'
+                          res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, siteCount, rst : rst});
+
+                        }else{
+
+                            /**
+                             * Get the number of people on site
+                             */
+                             db.getTableRowCount('evacuation', function(err,rslt8){
+                              if (err) {
+                                console.log('Error while performing row count query: ' + err);
+                              }else{
+                                
+                                 var siteCount = rslt8[0].rowCount;
+
+                                 /**
+                                 * Get the last muster
+                                 */
+                                 db.getTableLatestUpdateDate('musterMaster', function(err,reslt7){  
+                                  if (err) {
+                                    console.log('Error while performing row count query: ' + err);
+                                  }else{
+
+                                    lastMuster = reslt7[0].maxTime;
+                                    res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, siteCount, rst : rst});
+                                  }
+                                });
+                              }
+                              });
+
+
+
+                          }
+
+
+                       // res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, rst : rst});
                       }
                     });  
+              }
+            });
+
           }
-        });
+          });///GOES HERE  
         }
           
         });
@@ -160,7 +214,9 @@ exports.dashboardHome = function(req, res) {
 
 
 
-// handler for showing simple pages
+//////////////////////////////////////
+// handler for showing about page   //
+//////////////////////////////////////
 exports.about = function(req, res) {
 	sess=req.session;
   var name = req.query.name;
@@ -177,13 +233,26 @@ exports.about = function(req, res) {
     var computername = 'server : '+process.env.COMPUTERNAME;
     var userdomain = 'user domain : '+process.env.USERDOMAIN;
     var dblocation = 'database : '+process.env.DB_HOST;
-     
-   
 
-    res.render('about', { title: 'Command Center - About' + name, username: sess.username, clientname: clientname, computername : computername, userdomain: userdomain, version : version, dblocation : dblocation });
+    res.render('about', { title: 'Command Center' + name, username: sess.username, clientname: clientname, computername : computername, userdomain: userdomain, version : version, dblocation : dblocation });
     }
 };
 
+
+////////////////////////////////
+// show the unauthorised page //
+////////////////////////////////
+exports.unauthorized = function(req, res) {
+  sess=req.session;
+  var name = req.query.name;
+
+  if (typeof sess.username == 'undefined') {
+      res.redirect('/');
+    }else{
+ 
+    res.render('unauhtorized', { title: 'Command Center' });
+    }
+};
 
 
 
