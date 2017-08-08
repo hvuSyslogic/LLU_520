@@ -60,6 +60,7 @@ router.post('/eventModify/:eventID', events.eventUpdateOne);
 router.get('/eventAttendance/:eventID', events.eventAttendance);
 router.get('/eventsUpcoming', events.eventsUpComing);
 router.post('/eventAttendance/:eventID', events.writeAttendanceRpt);
+
 router.get('/eventAddInviteList/:InvitationListID/:eventID', events.eventAddInviteList);
 router.post('/eventChangeInviteList/:InvitationListID/:eventID', events.eventChangeInviteList);
 

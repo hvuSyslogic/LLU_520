@@ -16,9 +16,10 @@ block content
                             label.col-lg-2.control-label(for='select') Current Status
                             .col-lg-10
                               select#selecttime.form-control(name='currentStatus')
+                                option(selected=result[0].CurrentStatus == '0') REQUESTING ACTIVATION
                                 option(selected=result[0].CurrentStatus == '1') WHITELIST
-                                option(selected=result[0].CurrentStatus== '2') BLACKLIST
-                                option(selected=result[0].CurrentStatus== '3') GRAYLIST
+                                option(selected=result[0].CurrentStatus== '2') GRAYLIST
+                                option(selected=result[0].CurrentStatus== '3') BLACKLIST
                             label.col-lg-2.control-label(for='textArea') Comments
                             .col-lg-10
                                 textarea#textArea.form-control(rows='3', name='comments')

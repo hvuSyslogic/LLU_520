@@ -8,6 +8,8 @@ var clearTables = require('../models/clearTables');
 var db = require('../models/db');
 var inviteList = require('../models/inviteList');
 var csvImportInsert = require('./csvImportInsert');
+var csvImportInsertS2 = require('./csvImportInsertS2');
+
 
 
 //////////////////////////////////////////////////////
@@ -110,8 +112,13 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
 
                         switch (exSrc)
                         {
-                           case "AMAG":
+                          case "AMAG":
                               strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (LastName, FirstName, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy,@dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy, imageName ) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), updateTime ="+_updateTime;
+
+                              break;
+                          
+                          case "ACM":
+                              strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@var1, @var2, @dummy, @dummy, @dummy, @dummy, @dummy, FirstName, LastName, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, EmailAddr, Title, Department, Division, SiteLocation, Building, @dummy, @dummy, iClassNumber ) SET imageName=@var1, EmpID= @var2, Identifier1=@var2, updateTime ="+_updateTime;
 
                               break;
 
@@ -124,6 +131,8 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                          * Needs to be MONITORED.  Possible that git changes line endings on .csv files?  it certianly sends warnings that
                          * it is checning line endings.  Notes on this can be found in Evernote.
                          */
+                        
+                          //Process for export source OTHER
                               strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (empID, LastName, FirstName, title, iClassNumber, imageName) SET  updateTime ="+_updateTime;
 
                         }
@@ -145,12 +154,15 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                       // Remove any imported .jpg extension from the ImageName      //
                       ////////////////////////////////////////////////////////////////
                       /**
-                       * Need to do this for .jpg and .JPG
+                       * Need to do this for .jpg and .JPG and .jpeg and .JPEG
                        */
-                      var jpgSQL = "UPDATE people SET imageName = REPLACE(imageName, '.JPG', '')"
+                      
+                      var jpgSQL = "update people set imageName = replace(replace(replace(replace(imageName,'.jpg',''),'.JPG',''), '.jpeg', ''), '.JPEG', '')"
+                      //var jpgSQL = "UPDATE people SET imageName = REPLACE(imageName, '.JPG', '')"
                       query = connection.query(jpgSQL, function(err, result) {
 
                         if (err) { console.log('couldnt remove the .jpg extensions '+err);}
+                         
                       });
                         
                       ///////////////////////////////
@@ -167,11 +179,14 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                         
                          switch (exSrc)
                         {
-                           case "AMAG":
+                          case "AMAG":
                               strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, UpdateTime) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), StatusID ='1', StatusName = 'Active'";
 
                               break;
+                          case "ACM":
+                              strSQL =  strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, @var2, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @var1, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy,@dummy, @dummy, iClassNumber) SET EmpID = @var2, StatusID ='1', StatusName = 'Active', updateTime ="+_updateTime;
 
+                              break;
                           default: 
                           /**
                          * \r\n doesnt work for certain files, possibly files opened, saved or created in notepad.
@@ -179,8 +194,9 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                          * This change was percolated 6/20/17 into the other two tables below and Beckenbauer
                          * REVERSED this 7/9/17 -- \n alone wasnt working properly.  There seems to be some inconsistency here.
                          * Needs to be MONITORED.  Possible that git changes line endings on .csv files?  it certianly sends warnings that
-                         * it is checning line endings.  Notes on this can be found in Evernote.
+                         * it is checking line endings.  Notes on this can be found in Evernote.
                          */
+                            //Process for export source OTHER
                             strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE empbadge FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (EmpID, @dummy, @dummy, @dummy, iClassNumber) SET StatusID ='1', StatusName = 'Active', updateTime ="+_updateTime;
 
                         }
@@ -241,12 +257,15 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
                          * AMAG does not come with a title line, so no IGNORE 1 LINES for that option
                          */
                           
-                          switch (exSrc)
+                        switch (exSrc)
                         {
-                           case "AMAG":
+                          case "AMAG":
                               strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (@dummy, @dummy, @var1, @dummy, @dummy, @var2) SET BadgeID = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
 
                               break;
+                          case "ACM":
+                              strSQL =  strPrepend+"'"+csvFileName+"'"+" INTO TABLE accesslevels FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, @var2, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @var1, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, BadgeID) SET EmpID = @var2, AccsLvlID = '1', AccsLvlName = 'Main', updateTime ="+_updateTime;
+                          break;
 
                           default: 
                           /**
@@ -304,7 +323,7 @@ exports.inFile = function(csvFileName, fileExtension, callback) {
 ////////////////////////////////////////////////////////
 //  Load the csv invitee file into the invitees table //
 ////////////////////////////////////////////////////////
-exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
+exports.importInvite = function(csvFileName, listName, listComment, callback) {
   sess.success = null;
   sess.error = null;
   var strSQL = "";
@@ -312,7 +331,7 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
   
   
   /**
-   * set the case for the wether the MYSQL db is local or remote from the app .env file.
+   * set the case for the whether the MYSQL db is local or remote from the app .env file.
    * if remote, use LOAD LOCAL for the INFILE, as RDS (and perhaps other remote instances)
    * can't be configured to use regular INFILE.  Dong this largely because RDS is 
    * not set up to allow regular INFILE but DOES allow LOAD LOCAL, and at least one customer
@@ -346,14 +365,11 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
         
         
         /**
-         * Not sure if we need to clear any invitee records before import
-         * Presumably, we need to create a header record and then import the 
-         * records in the headers associated invitees file.
          *
-         * Use MySQL INFILE function
+         * Default to use MySQL INFILE function
          * to directly load people, empbadge and accesslevels tables from the csv file
          * this is considered up to 20 times faster than INSERT
-         * file to table mapping can be controlled the @variables (see @dummy below)
+         * file to table mapping can be controlled through @variables and @dummy
          *
          * Create the InviteList first, and then if successful, 
          * INFILE the csv into the invitees table
@@ -362,25 +378,41 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
         console.log('process env '+process.env.INFILE_DISABLED);
         if (process.env.INFILE_DISABLED == 'YES') {
 
-            csvImportInsert.insertInvite(connection, csvFileName, listName, listComment, function(err, res2){ 
+            //currently only OTHER is supported for INVITE.  This means S2 cant use invites!!!!
+            if (process.env.EXPORT_SOURCE == "OTHER"){
+              csvImportInsert.insertInvite(connection, csvFileName, listName, listComment, function(err, res2){ 
                     if (err) {
-                      console.log('Error while performing BATCH INFILE proessing: ' + err);
+                      console.log('Error while performing INFILE proessing: ' + err);
                       sess.error = 'There was a problem importing csv file to the people table';
                       callback(err, 'failed');
                       connection.end();
-                     
-                      
-                    } else {
-                      
+                    } else {        
                       sess.success ='Update was successful.';
                       callback(null, 'success');
                     }
-            });
+              });
+            } else {
+              sess.error = 'Cannot create invitation lists with INFILE disabled and source data = '+process.env.EXPORT_SOURCE; 
+              callback(err, 'failed'); 
+              connection.end(); }
+
+          }else{
+          //Some export sources require INSERT processing, despite INFILE being available 
+          if (process.env.EXPORT_SOURCE=="S2"){
+            csvImportInsertS2.insertInvite(connection, csvFileName, listName, listComment, function(err, res2){ 
+                    if (err) {
+                      console.log('Error while performing INFILE proessing: ' + err);
+                      sess.error = 'There was a problem importing csv file to the INVITEES table';
+                      callback(err, 'failed');
+                      connection.end();
+                    } else {        
+                      sess.success ='Update was successful.';
+                      callback(null, 'success');
+                    }
+              });
           }else{
 
-
-
-
+          //Use INFILE to import the lists  
           inviteList.createInviteList(connection, listName, listComment, function(err,rslt){
             if (err) {
               console.log('Error while creating the invite list table: ' + err);
@@ -407,9 +439,7 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
                          * for the user to select a path/filename and have the path come back from 
                          * the browser.  The actual path is not returned by the browser
                          */
-                        console.log('invite filename BEFORE replace'+csvFileName);
                         csvFileName = csvFileName.replace(/\\/g, "/");
-                        console.log('invite filename AFTER replace'+csvFileName);
 
                         /////////////////////////////////////////////////////////////////////////////
                         //  This format is for a simple csv that comports with the table structure //
@@ -421,21 +451,25 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
                         //  Whereas this format is for the beta customer who sent csv files in the cardholder format //
                         ///////////////////////////////////////////////////////////////////////////////////////////////
                         //strSQL = "LOAD DATA LOCAL INFILE "+ "'"+csvFileName+"'"+" INTO TABLE Invitees FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, LastName, FirstName, @dummy, BadgeNumber) SET  UpdateTime = CURRENT_TIMESTAMP, InvitationListID = LAST_INSERT_ID()";
+                       
                         /**
-                         * CHange this from \r\n as per note in the csvImport.js about certain files not
-                         * working with this termination specification
+                         * Two Source formats currently distinguished -- regular and ACM 
                          * 
                          */
-                        strSQL = strPrepend+ "'"+csvFileName+"'"+" INTO TABLE Invitees FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, LastName, FirstName, @dummy, BadgeNumber) SET InvitationListID = LAST_INSERT_ID(), UpdateTime ="+_updateTime;
+                        if (process.env.EXPORT_SOURCE == "ACM"){
+                            strSQL = strPrepend+ "'"+csvFileName+"'"+" INTO TABLE Invitees FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy,  FirstName, LastName, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, EmailAddress, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy,BadgeNumber) SET InvitationListID = LAST_INSERT_ID(), UpdateTime ="+_updateTime;
 
-                        console.log('here is the infile query '+strSQL);
-                        console.log('HERE IS THE CSVFILENAME '+csvFileName);
+                          }else{
+                            strSQL = strPrepend+ "'"+csvFileName+"'"+" INTO TABLE Invitees FIELDS TERMINATED BY ',' ENCLOSED BY '' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@dummy, LastName, FirstName, @dummy, BadgeNumber) SET InvitationListID = LAST_INSERT_ID(), UpdateTime ="+_updateTime;
+
+                          }    
+                        
                         query = connection.query(strSQL, function(err, result) {
 
                       
                          if (err) {
                             console.log(err)
-                            sess.error = 'There was a problem importing csv file to the people table';
+                            sess.error = 'There was a problem importing csv file to the invitees table';
                             callback(err, 'failed');
                             connection.end();
                             
@@ -447,8 +481,9 @@ exports.inFileInvite = function(csvFileName, listName, listComment, callback) {
                           }
 
                         });
-            }
-          });
+                  }
+            });
+          }//else on the S2 if
 
          } 
 

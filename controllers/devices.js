@@ -73,7 +73,7 @@ module.exports.deviceGetOne = function(req,res) {
           var connection = reslt;
 
           console.log('Authcode param '+req.params.authCode);
-          var strSQL = 'SELECT * FROM DeviceHeader WHERE AuthCode='+req.params.authCode;
+          var strSQL = 'SELECT * FROM DeviceHeader WHERE AuthCode="'+req.params.authCode+'"';
          
           var query = connection.query(strSQL, function(err, result) {
 
@@ -120,14 +120,17 @@ exports.deviceUpdateOne = function(req, res) {
               var _currentStatus = '';
               if (req.body.currentStatus == 'WHITELIST'){
                 _currentStatus = '1';
-                }else if (req.body.currentStatus == 'BLACKLIST'){
+                }else if (req.body.currentStatus == 'GRAYLIST'){
                     _currentStatus = '2';
-                    }else if (req.body.currentStatus == 'GRAYLIST'){
+                    }else if (req.body.currentStatus == 'BLACKLIST'){
                         _currentStatus = '3';
                         }
+                        else if (req.body.currentStatus == 'REQUESTING ACTIVATION'){
+                          _currentStatus = '0';
+                        } 
               console.log('authCode = '+ JSON.stringify(req.params.authCode));  
 
-              var strSQL = 'UPDATE DeviceHeader SET CurrentStatus='+_currentStatus+' WHERE AuthCode='+req.params.authCode;
+              var strSQL = 'UPDATE DeviceHeader SET CurrentStatus='+_currentStatus+' WHERE AuthCode="'+req.params.authCode+'"';
               console.log('update strSQL= '+ strSQL);  
 
               var query = connection.query(strSQL, function(err, result) {
@@ -151,7 +154,7 @@ exports.deviceUpdateOne = function(req, res) {
                     var _statusDate = datetime.syncCurrentDateTimeforDB(); 
                    
                    
-                    var strSQL1 =  'INSERT into DeviceHistory (AuthCode, Status, StatusDate, StatusChangeComment) VALUES('+_authCode+', '+_status+', "'+_statusDate+'", "'+_comment+'")';
+                    var strSQL1 =  'INSERT into DeviceHistory (AuthCode, Status, StatusDate, StatusChangeComment) VALUES("'+_authCode+'", "'+_status+'", "'+_statusDate+'", "'+_comment+'")';
                     console.log('INSERT strSQL1= '+ strSQL1);  
 
                       connection.query(strSQL1, function(err, rows) {
@@ -203,7 +206,7 @@ module.exports.deviceGetHistory= function(req, res) {
               var connection = reslt;
               console.log('here is the connnection '+reslt.threadId);
 
-              var _sqlQ = 'SELECT * FROM DeviceHistory WHERE AuthCode='+req.params.authCode;
+              var _sqlQ = 'SELECT * FROM DeviceHistory WHERE AuthCode="'+req.params.authCode+'"';
               console.log(_sqlQ);
               connection.query(_sqlQ, function(err, results) {
               if(err) { console.log('devicehistory query problem : '+err); callback(true); connection.end(); return; }

@@ -1,0 +1,24 @@
+include mixins
+extends layout
+block content 
+            include navbar
+            h3 Write REport
+
+            form(method='post')    
+              h5 Optional email:
+                &nbsp
+                input(type='password', name='email')
+                &nbsp
+                button.btn.btn-primary(type="submit") Search gallery
+                
+              br
+              include footer
+
+
+
+
+      
+     
+     
+
+      

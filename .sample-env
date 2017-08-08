@@ -1,7 +1,7 @@
 VERSION=5.0.0
-DB_HOST=mobss-dev001.cgtzydaxfg7j.us-west-2.rds.amazonaws.com
+DB_HOST=localhost
 DB_USER=root
-DB_PASS=ms_root_XS12
+DB_PASS=
 DB_NAME=mobss
 NODE_ENV=development
 CC_USER=command

@@ -1,5 +1,5 @@
-Last Name,First Name,Attendance Date,Time In,Time Out,Badge ID
+Last Name,First Name,Attendance Date,Email,Time In,Time Out,Badge ID,Identifier,
 
-Barnes,Austin,6/9/17,1:30 pm,2:15 pm,502
-Acheson,Heather,6/9/17,2:27 pm,2:27 pm,547
+Barnes,Austin,6/9/17,,1:30 pm,2:15 pm,502,
+Acheson,Heather,6/9/17,,2:27 pm,2:27 pm,547,
 

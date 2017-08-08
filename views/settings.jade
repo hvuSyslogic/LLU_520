@@ -88,7 +88,11 @@ block content
                                   |            S2
                               .radio
                                 label
-                                  input#optionsRadios25(name='exportRadios', type='radio', checked=exportSource == 'OTHER', value='OTHER')
+                                  input#optionsRadios25(name='exportRadios', type='radio', checked=exportSource == 'ACM', value='ACM')
+                                  |            Avigilon [ACM]
+                              .radio
+                                label
+                                  input#optionsRadios26(name='exportRadios', type='radio', checked=exportSource == 'OTHER', value='OTHER')
                                   |            Other
                        
                         .form-group
@@ -122,7 +126,25 @@ block content
                                 label
                                   input#optionsRadios4(name='musterRadios', type='radio', checked=muster == 'OFF', value='OFF')
                                   |            OFF
-                        
+                        .form-group
+                            label.col-lg-2.control-label(for='inputPassword') Email host
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text',name='emailHost', required='', value=emailHost)  
+                            label.col-lg-2.control-label(for='inputPassword') Email port
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', name='emailPort', value=emailPort)
+                            label.col-lg-2.control-label(for='inputPassword') Email secure
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', name='emailSecure', value=emailSecure)
+                            label.col-lg-2.control-label(for='inputPassword') Email from
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', placeholder='', name='emailFrom', value=emailFrom)
+                            label.col-lg-2.control-label(for='inputPassword') Email user
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', placeholder='', name='emailUser', value=emailUser)
+                            label.col-lg-2.control-label(for='inputPassword') Email password
+                            .col-lg-10
+                                input#inputPassword.form-control(type='text', placeholder='', name='emailPass', value=emailPass)
                         .form-group
                           .col-lg-10.col-lg-offset-2
                             //-feb--dont need cancel button as could just use browser back button

@@ -1,0 +1,66 @@
+<?lc
+-- 2017-05-24
+-- for use in CommandCenter 5 (node.js)
+-- plain-text password channel added
+
+put header "Content-Type: text/html" & NumToChar(13)
+put $_POST["pass"] into tPass
+put $_POST["data"] into tData
+put $_POST["action"] into tAction
+put urldecode(tPass) into tPass
+put urldecode(tData) into tData
+put urldecode(tAction) into tAction
+
+if tPass = "agpbrtdk" then
+	put revOpenDatabase("mysql","mobss","root","ms_root_XS12") into tConID
+	if tConID is a number then
+		switch tAction
+
+			case "sendAttendance"
+				put 0 into tRecords
+				put empty into tError
+				put "attendance" into tTable
+				put "MobSSID,EmpID,iClassNumber,FirstName, LastName, InTIme, OutTIme,InSeconds,OutSeconds,EventID,EventName,AttendDate,MobSSOperator,RecordStatus" into tFields
+				--
+				repeat with i = 1 to the number of lines in tData
+					set itemdel to tab
+					put line i of tData into tLine
+					put item 1 of tLine into tMobSSID
+					put item 2 of tLine into tEmpID
+					put item 3 of tLine into tiClassNumber
+					put item 4 of tLine into tFirstName
+					put item 5 of tLine into tLastName
+					put item 6 of tLine into tInTIme
+					put item 7 of tLine into tOutTIme
+					put item 8 of tLine into tInSeconds
+					put item 9 of tLine into tOutSeconds
+					put item 10 of tLine into tEventID
+					put item 11 of tLine into tEventName
+					put item 12 of tLine into tAttendDate
+					put item 13 of tLine into tMobSSOperator
+					put item 14 of tLine into tRecordStatus
+					--
+					set itemdel to comma
+					put "INSERT INTO" && tTable && "(" & tFields & ") VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14);" into tSQL
+					revExecuteSQL tConID, tSQL, "tMobSSID", "tEmpID", "tiClassNumber", "tFirstName", "tLastName", "tInTIme", "tOutTIme", "tInSeconds", "tOutSeconds", "tEventID" , "tEventName", "tAttendDate", "tMobSSOperator", "tRecordStatus"
+					if the result is a number then
+						add the result to tRecords
+					else
+						put the result into tError
+					end if
+				end repeat
+
+				if tError is empty then
+					put "SUCCESS" && tRecords
+				else
+					put "ERROR" && tError && tRecords
+				end if
+				break
+		end switch
+	end if
+	revCloseDatabase tConID
+	put empty
+else
+	put "Error: unauthorised access attempt"
+end if
+?>

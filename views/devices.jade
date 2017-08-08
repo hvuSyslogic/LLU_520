@@ -5,6 +5,7 @@ block content
             include navbar
 
             h3 Devices
+            h5 (0=Requesting activation; 1=Whitelist; 2=Graylist; 3=Blacklist)
             br
 
             div
@@ -18,7 +19,6 @@ block content
                             th Last Connect
                             th Current Status
                             th Device Type
-                            th Operator
                     tbody
                         -each result in results
                             tr
@@ -32,7 +32,6 @@ block content
                                     td=result.LastConnect
                                     td=result.CurrentStatus
                                     td=result.DeviceType
-                                    td=result.MobssOperator
 
                 script.
                     $(document).ready(function() {

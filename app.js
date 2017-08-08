@@ -134,13 +134,13 @@ if (process.env.SWEEP_SCHED != "OFF") {
     console.log(process.env.SWEEP_SCHED);
     console.log(new Date());
 
+    console.log('here is the sweep timer '+ process.env.SWEEP_TIMER);
 
-    new CronJob('0 44 15 * * 0-6', function() {
+    new CronJob('0 11 22 * * 0-6', function() {
 
     //new CronJob('* * * * * *', function() {
         beckenbauer.sweeper(function(err,rslt){
-          console.log('anything')
-              if (err) {console.log('didnt run the cron' + err);}
+              if (err) {console.log('cron unsuccessful: ' + err);}
       });
 
     }, null, true, 'America/New_York');

@@ -20,7 +20,7 @@ var connection = mysql.createConnection({
   if (err) {
     console.error('error doing the modularized connect ' + err.stack);
     // email mobss support if there is a problem connecting to the database
-    emailController.sendIncidentEmail('There is a database problem @ db.createConnection', function(err,reslt){
+    emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during db connection', process.env.FROMADDR,function(err,reslt){
         if (err) {console.log('a problem occurred, attempting to email customer support')}
         });
     callback('error connecting to database in db.js', null);
@@ -53,7 +53,7 @@ module.exports.getQuery = function(callback){
        		callback(null, rows);
     	 } else {
        		console.log('Error while performing Query in getQuery.');
-          emailController.sendIncidentEmail('There is a database problem @ db.getquery', function(err,reslt){
+          emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during db get query', process.env.FROMADDR, function(err,reslt){
                 if (err) {console.log('a problem occurred, attempting to email customer support')}
               });
        		callback(err, rows);
@@ -89,7 +89,7 @@ module.exports.getTableLatestUpdateTime = function(table, callback){
           }else{
               console.log('error with the max query');
               //send an email to mobss technical support detailing error
-              emailController.sendIncidentEmail('There is a database problem @ db.getlatestupdatetime', function(err,reslt){
+              emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during db get latest update time', process.env.FROMADDR, function(err,reslt){
                 if (err) {console.log('a problem occurred, attempting to email customer support')}
               });
               connection.end();
@@ -121,7 +121,7 @@ module.exports.getTableLatestUpdateDate = function(table, callback){
           }else{
               console.log('error with the max query');
               //send an email to mobss technical support detailing error
-              emailController.sendIncidentEmail('There is a database problem @ db.getlatestupdatetime', function(err,reslt){
+              emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during db get max time', process.env.FROMADDR, function(err,reslt){
                 if (err) {console.log('a problem occurred, attempting to email customer support')}
               });
               connection.end();
@@ -156,7 +156,7 @@ module.exports.getTableRowCount = function(table, callback){
           }else{
               console.log('error with the count query');
               //send an email to mobss technical support detailing error
-              emailController.sendIncidentEmail('There is a database problem @ db.gettablerowcount', function(err,reslt){
+              emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during db get row count', process.env.FROMADDR, function(err,reslt){
                 if (err) {console.log('a problem occurred, attempting to email customer support')}
               });
               connection.end();
@@ -187,7 +187,7 @@ module.exports.getNextEvent = function(callback){
           }else{
               console.log('error with the count query');
               //send an email to mobss technical support detailing error
-              emailController.sendIncidentEmail('There is a database problem @ db.gettablerowcount', function(err,reslt){
+              emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during db get future events', process.env.FROMADDR, function(err,reslt){
                 if (err) {console.log('a problem occurred, attempting to email customer support')}
               });
               connection.end();

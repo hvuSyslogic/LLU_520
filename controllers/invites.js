@@ -242,10 +242,10 @@ exports.inviteIngest = function(req, res) {
           res.render('inviteAdd', { title: 'Command Center - Add Invite', username: sess.username, success: sess.success});
           } else {
   
-            // Call handler for clearing and creating records for the 3 files
+            
             // passing as variable the screen inputted directory and filename for the csv
             // NOTE: res2 so that this subbordinate function can access the original http res variable
-            csvImport.inFileInvite(csvFileName, listName, listComment, function(err, res2){ 
+            csvImport.importInvite(csvFileName, listName, listComment, function(err, res2){ 
                     if (err) {
                       console.log('Error while performing INFILE proessing: ' + err);
                       res.render('inviteAdd', { title: 'Command Center', username: sess.username, success: sess.success });

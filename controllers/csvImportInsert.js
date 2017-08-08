@@ -16,6 +16,7 @@ exports.insertInvite = function(connection, csvFileName, listName, listComment, 
  // sess.error = null;
   var strSQL = "";
   var query = null;
+  var caller = "manual"
 
   
         
@@ -35,8 +36,7 @@ exports.insertInvite = function(connection, csvFileName, listName, listComment, 
               callback(err, null);
             }else{
 
-                        //console.log(req.body.fileName);
-                //fs.readFile(req.body.directoryName+req.body.fileName, {
+                 
                 fs.readFile(csvFileName, {
                 //fs.readFile(req.body.fileName, {
                     encoding: 'utf-8'
@@ -188,7 +188,8 @@ exports.insertPeople = function(csvFileName, callback) {
                               * one long string
                               * 
                               */
-                                csvImportInsertS2.processInsert(connection, connectionEB, connectionAL, csvFileName, function(err,rslt){
+                                var caller = "manual"
+                                csvImportInsertS2.processInsert(connection, connectionEB, connectionAL, caller, csvFileName, function(err,rslt){
                                   if (err){
                                     console.log('Unsuccessful import');
                                     //sess.error = 'Unsuccessful import attempt'
@@ -227,7 +228,6 @@ exports.insertPeople = function(csvFileName, callback) {
                                 } else {
                                     
                                     var rowsToInsert = data.length-1
-                                    console.log('length of FIEL:iNSERT is '+data.length+rowsToInsert);
                                     var _firstName = ""
                                     var _lastName = ""
                                     var _badgeNumber = ""
@@ -292,6 +292,22 @@ exports.insertPeople = function(csvFileName, callback) {
                                             sess.success==null;
                                             
                                           if (errInsert==null) {
+                                            ////////////////////////////////////////////////////////////////
+                                            // Remove any imported .jpg extension from the ImageName      //
+                                            ////////////////////////////////////////////////////////////////
+                                            /**
+                                             * Need to do this for .jpg and .JPG and .jpeg and .JPEG
+                                             */
+                                            
+                                            var jpgSQL = "update people set imageName = replace(replace(replace(replace(imageName,'.jpg',''),'.JPG',''), '.jpeg', ''), '.JPEG', '')"
+                                            //var jpgSQL = "UPDATE people SET imageName = REPLACE(imageName, '.JPG', '')"
+                                            query = connection.query(jpgSQL, function(err, result) {
+
+                                              if (err) { console.log('couldnt remove the .jpg extensions '+err);}
+                                               
+                                            });
+
+                                            // get the row count for confirmation message
                                             var query = connection.query('select count(*) as rowCount from people', function(err, result) {
 
                                               console.log ('here is rowcount '+JSON.stringify(result[0].rowCount))

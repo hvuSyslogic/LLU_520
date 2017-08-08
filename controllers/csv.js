@@ -129,34 +129,51 @@ exports.csvIngest = function(req, res) {
            {
              case 'YES':
                 var count = 0;
-               csvImportInsert.insertPeople(csvFileName, function(err, res2){ 
-                 if (err) {
+                //Only OTHER (mobss stipulated format) and S2 can use INSERT processing
+                if (process.env.EXPORT_SOURCE=="OTHER" || process.env.EXPORT_SOURCE=="S2"){
+                  csvImportInsert.insertPeople(csvFileName, function(err, res2){ 
+                   if (err) {
                     count = count +1;
-                     console.log('Error while performing People INSERT proessing: ' +count+ err);
-                     //sess.error = 'There was a problem importing csv file to the people table.  See logs.';
-                     
-                     res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success, error : sess.error });
-                       //   sess.multiError = 1;
-                       //  return
-                     
-                     } else {
-                        //sess.success ='Insert successful'+sess.success;
-                      
-                        res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
+                    console.log('Error while performing People INSERT proessing: ' +count+ err);                     
+                    res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success, error : sess.error });   
+                    } else {
+                    res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
                       
                     }
                   });
-                  break;
+              } else {
+              sess.error = 'Cannot import cardholders with INFILE disabled and source data = '+process.env.EXPORT_SOURCE; 
+              res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success, error : sess.error });                   
+              }
+                break;
 
               default: 
-                csvImport.inFile(csvFileName, fileExtension, function(err, res2){ 
-                    if (err) {
-                      console.log('Error while performing INFILE proessing: ' + err);
-                      res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
-                    } else {
-                      res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
-                    }
-                });
+                // INFILE is enabled but cant be used with some data sources (eg S2)
+                if (process.env.EXPORT_SOURCE=="S2"){
+                    var count = 0;
+                    csvImportInsert.insertPeople(csvFileName, function(err, res2){ 
+                     if (err) {
+                        count = count +1;
+                        console.log('Error while performing People INSERT proessing: ' +count+ err);                     
+                        res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success, error : sess.error });                   
+                        } else {                      
+                        res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
+                      
+                      }
+                    });
+
+                }else{
+                  // this should be the most common pathway -- Infile is enabled and the data
+                  // source allows for it
+                  csvImport.inFile(csvFileName, fileExtension, function(err, res2){ 
+                      if (err) {
+                        console.log('Error while performing INFILE proessing: ' + err);
+                        res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
+                      }else{
+                        res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
+                      }
+                  });
+                }
             }
 
           } 

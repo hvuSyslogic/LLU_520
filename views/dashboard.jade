@@ -1,7 +1,10 @@
 include mixins
 extends layout
+
+
 block content   
             include navbar
+            meta(http-equiv='refresh', content='60')
 
 
             
@@ -44,25 +47,68 @@ block content
                         thead
                             tr.danger
                                 th Reader ID
-                                th Current Status
-                                th Last Connected
-                                th Connect Count
-                                th Activated On
+                                th Connection Attempt
+                                th Result
+                                th GPS (Lat)
+                                th GPS (Lng)
                         tbody
-                            -each result in results
+                            -each reslt8 in reslt8s
                                 tr
-                                    td=result.AuthCode
-                                    td=result.CurrentStatus
-                                    td=result.LastConnect
-                                    td=result.ConnectionAttemptCount
-                                    td=result.DateIssued
+                                    td=reslt8.AuthCode
+                                    td=reslt8.ConnectionAttemptTime
+                                    td=reslt8.Result
+                                    td=reslt8.Lat
+                                    td=reslt8.Lng
                     script.
                         $(document).ready(function() {
-                        $('#pickle1').DataTable();
+                        $('#pickle1').DataTable({
+                         "bSort" : false
+                         });
                         });
                     script.
                         $(document).ready(function() {
                         $('#pickle1 tr').click(function() {
+                        var href = $(this).find("a").attr("href");
+                            if(href) {
+                                window.location = href;
+                            }
+                        });
+                        });
+
+
+                        br
+               
+            .row
+                br
+                p.text-info DEVICES REQUESTING ACTIVATION
+               
+                div
+                    table#pickle2.table.table-hover.table-striped.table-bordered 
+                        thead
+                            tr.info
+                                th
+                                th Reader ID
+                                th Current Status
+                                th Last Connected
+                                th Connect Count
+                                
+                        tbody
+                            -each resultA in resultAs
+                                tr
+                                    td
+                                        a(href="/deviceModify/#{resultA.AuthCode}") Activate
+                                    td=resultA.AuthCode
+                                    td=resultA.CurrentStatus
+                                    td=resultA.LastConnect
+                                    td=resultA.ConnectionAttemptCount
+                                    
+                    script.
+                        $(document).ready(function() {
+                        $('#pickle2').DataTable();
+                        });
+                    script.
+                        $(document).ready(function() {
+                        $('#pickle2 tr').click(function() {
                         var href = $(this).find("a").attr("href");
                             if(href) {
                                 window.location = href;
@@ -78,7 +124,7 @@ block content
 
                
                 div
-                    table#pickle.table.table-hover.table-striped.table-bordered
+                    table#pickle3.table.table-hover.table-striped.table-bordered
                         thead
                             tr.warning
                                 th Reader ID
@@ -96,11 +142,11 @@ block content
                                     td=result.DateIssued
                     script.
                         $(document).ready(function() {
-                        $('#pickle').DataTable();
+                        $('#pickle3').DataTable();
                         });
                     script.
                         $(document).ready(function() {
-                        $('#pickle tr').click(function() {
+                        $('#pickle3 tr').click(function() {
                         var href = $(this).find("a").attr("href");
                             if(href) {
                                 window.location = href;

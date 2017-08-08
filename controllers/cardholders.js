@@ -17,7 +17,7 @@ exports.cardholdersHome = function(req, res) {
         if (err) {
           console.log('Error while pErforming common connect query: ' + err);
           // email mobss support if there is a problem connecting to the database
-          emailController.sendIncidentEmail('There is a database problem @ cardholders.cardholdersHome', function(err,reslt){
+          emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during cardholder i/o', process.env.FROMADDR,function(err,reslt){
           if (err) {console.log('a problem occurred, attempting to email customer support')}
           });
           callback(err, null);

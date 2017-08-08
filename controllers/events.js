@@ -478,15 +478,13 @@ exports.eventChangeInviteList = function(req, res) {
 // handler displaying the attendance records for a particular event
 module.exports.eventAttendance = function(req, res) {
   sess=req.session;
-  //sess.rptError =null;
-  //sess.rptSuccess = null;
+ 
   // don't let nameless people view the dashboard, redirect them back to the homepage
   if (typeof sess.username == 'undefined') res.redirect('/');
   else {
 
-            //feb--connect to the database, performa query to get all rows from people and send that data to 
-            //--to be rendered as a table in Jade
-            //feb- we have user entry at this point and so setting up the credentials here
+            //connect to the database, perform query to get all rows from people and send that data to 
+            //to be rendered as a table in Jade
             //get a connection using the common handler in models/db.js
         db.createConnection(function(err,reslt){  
             if (err) {
@@ -517,26 +515,20 @@ module.exports.eventAttendance = function(req, res) {
   }
 };
 
+// Handler for the attendance report.  This is 
 // handler displaying the attendance records for a particular event
-module.exports.writeAttendanceRpt = function(req, res) {
+exports.writeAttendanceRpt = function(req, res) {
   console.error('im in the write handler: '+ JSON.stringify(req.body));
   sess=req.session;
   var eventID = req.params.eventID;
 
+
   writeReport.writeReport('Attendance', eventID, function(err,reslt){  
           console.log('how about here?')
-          //res.render('eventAttendance', { title: 'Command Center - Attendance', rptSuccess : sess.rptSuccess, rptError : sess.rptError});
-          //res.render('eventAttendance', { title: 'Command Center 360 - Attendance', results : results, eventID : eventID, eventName : eventName, rptSuccess : sess.rptSuccess, rptError : sess.rptError});
-          //res.render('eventAttendance', { title: 'Command Center - Attendance', eventID : eventID, rptSuccess : sess.rptSuccess, rptError : sess.rptError});
-          //res.redirect('/events');
+          
           console.log ('just before the redirect '+sess.rptSuccess);
           res.status(301).redirect('/eventAttendance/'+eventID);
-          //res.status(301).redirect('http://google.com')
 
-
-//'/?error=denied'
-
-    
-    });
+  });
  
 };

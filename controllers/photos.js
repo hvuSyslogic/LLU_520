@@ -93,13 +93,11 @@ fs.readdir( moveFrom, function( err, files ) {
 
 
 
-///////////////////////////////////////////////////
-// handler for showing the photo check page      //
-///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// handler for showing the photo check/Gallery page      //
+//////////////////////////////////////////////////////////
 /**
- * End goal is to combine search with gallery
- * for now --- see .gallery
- *
+ * This is a combination gallery plus search field to find a particular photo
  */
 exports.photoCheck = function(req, res) {
   sess=req.session;
@@ -107,7 +105,7 @@ exports.photoCheck = function(req, res) {
   sess.photoCheckError1 = null       
   
 
-  // feb--don't let nameless people view the page, redirect them back to the homepage
+  // don't let nameless people view the page, redirect them back to the homepage
     if (typeof sess.username == 'undefined') {
       res.redirect('/');
     }else{
@@ -140,7 +138,7 @@ exports.photoCheck = function(req, res) {
                       var _numRows = rows.length;
                       console.log('number of rows returned was '+_numRows);
 
-                      // feb-- need to check for an empty set return??
+                      // need to check for an empty set return??
                       if(_numRows < 1) {
                         console.log('There were no ImageNames in the people table');
                         sess.photoCheckError = 'No Image references exist in the database';
@@ -162,6 +160,8 @@ exports.photoCheck = function(req, res) {
                     
                         for (var i=0; i < rows.length; i++) {
 
+                          // NOTE: adding the .jpg extension to the filename here, which is why it has to be removed
+                          // on ingest of cardholder data
                             var imageFullname = rows[i].ImageName+'.jpg'
                             
                             if (sess.empSearch == 'undefined'){ 

@@ -36,7 +36,6 @@ var buildAccessLevelQuery = (function() {
 
        if (err) {
           console.log(err)
-          sess.error = 'There was a problem updating the mobss database: '+err;
           connectionAL.end();
           callback(err, result);
         } else {

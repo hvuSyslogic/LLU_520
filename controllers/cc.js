@@ -87,11 +87,11 @@ exports.dashboardHome = function(req, res) {
      * Also, list current black and gray listed devices
      */
 
-    devices.getBadDevices(function(err, result){ // begin of gets
+    devices.getBadDevices(function(err, result, resultA){ // begin of gets
     if (err) {
       console.log('Error while performing query: ' + err);
       //send an email to mobss technical support detailing error
-      emailController.sendIncidentEmail('There is a database problem @ [dashgGR]', function(err,reslt){
+      emailController.sendIncidentEmail('Database Incident', 'A database problem occurred during devices i/o', process.env.FROMADDR, function(err,reslt){
         if (err) {console.log('a problem occurred, attempting to email customer support')}
       });
       //Return to the home screen.  reset the log in entries in order not to trigger a loop through
@@ -100,9 +100,12 @@ exports.dashboardHome = function(req, res) {
       sess.error = 'There is a database problem, please contact support [dashgGR]';
       sess.username = null;
       sess.password = null;
-      res.render('home', { title: 'Command Center 5.0'});
+      res.render('home', { title: 'Command Center'});
     }
     else {
+      
+      console.log('activate array back in cc '+JSON.stringify(resultA))
+
       /**
        * Get the rest of the dashboard information
        */
@@ -142,59 +145,58 @@ exports.dashboardHome = function(req, res) {
               console.log('row count is '+ rowCount);
               
 
-                   db.getNextEvent( function(err,rst){
+                  db.getNextEvent( function(err,rst){
                       if (err) {
                         console.log('Error while performing next event query: ' + err);
                       }else{
                         var nextEvent = rst;
                         /**
-                         * Display muster details if muster module installed
+                         * Display muster details 
                          */
                         var envMUSTER = process.env.MUSTER;
-                        var lastMuster = ""
-                        var siteCount = ""
+                        var lastMuster = "n/a"
+                        var siteCount = "n/a"
 
-                        if (envMUSTER =='OFF'){
-
-                          lastMuster = 'n/a'
-                          siteCount = 'n/a'
-                          res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, siteCount, rst : rst});
-
-                        }else{
 
                             /**
                              * Get the number of people on site
                              */
                              db.getTableRowCount('evacuation', function(err,rslt8){
                               if (err) {
-                                console.log('Error while performing row count query: ' + err);
+                                console.log('Error while performing evacuation row count query: ' + err);
                               }else{
-                                
-                                 var siteCount = rslt8[0].rowCount;
+
+                                 if (rslt8[0].rowCount != 0) {siteCount = rslt8[0].rowCount;}
 
                                  /**
                                  * Get the last muster
                                  */
                                  db.getTableLatestUpdateDate('musterMaster', function(err,reslt7){  
                                   if (err) {
-                                    console.log('Error while performing row count query: ' + err);
+                                    console.log('Error while performing last muster query: ' + err);
                                   }else{
 
-                                    lastMuster = reslt7[0].maxTime;
-                                    res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, siteCount, rst : rst});
+                                    if (reslt7.maxTime !=null){lastMuster = reslt7[0].maxTime;}
+                                    
+                                    /**
+                                     * Get bad connections
+                                     */
+                                    devices.getBadConnections(function(err,reslt8){  
+                                      if (err) {
+                                        console.log('Error while performing bad connections query: ' + err);
+                                      }else{
+                                      res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, resultAs : resultA, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, siteCount, rst : rst, reslt8s : reslt8});
+
+                                      }
+                                    })
+
                                   }
                                 });
                               }
                               });
 
-
-
-                          }
-
-
-                       // res.render('dashboard', { title: 'Command Center - Dashboard', username: req.session.username, results : result, metaTime : metaTime, rowCount : rowCount, totalDevices, lastMuster, rst : rst});
                       }
-                    });  
+                  });  
               }
             });
 

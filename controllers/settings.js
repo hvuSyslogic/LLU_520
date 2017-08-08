@@ -18,16 +18,14 @@ for(i in array) {
 // display the home page for the settings //
 ////////////////////////////////////////////
 exports.settingsHome = function(req, res) {
-	sess=req.session;
-  var name = req.query.name;
+    sess=req.session;
+    sess.success=null;
+    sess.error=null;
+    var name = req.query.name;
 
-  if (typeof sess.username == 'undefined') {
+    if (typeof sess.username == 'undefined') {
       res.redirect('/');
     }else{
- /**
-  * crash test
-  */
- //  process.exit(1)
  
 
  /**
@@ -46,13 +44,29 @@ exports.settingsHome = function(req, res) {
     var infileDis = process.env.INFILE_DISABLED;
     var infileLocal = process.env.LOCAL_INFILE;
     var port = process.env.PORT;
+    
     var exportSource = process.env.EXPORT_SOURCE;
+    
     var sweep = process.env.SWEEP_SCHED;
     var sweepDir = process.env.SWEEP_FILE;
     var pictureDir = process.env.PICTURE_DIR;
+    
     var muster = process.env.MUSTER;
+
     var certName = process.env.CERT_NAME;
-    var certPass = process.env.CERT_PASSPHRASE;     
+    var certPass = process.env.CERT_PASSPHRASE;
+
+    var emailHost = process.env.EMAIL_HOST;  
+    var emailPort = process.env.EMAIL_PORT; 
+    var emailSecure = process.env.EMAIL_SECURE;  
+    var emailUser = process.env.EMAIL_USER; 
+    var emailPass = process.env.EMAIL_PASS; 
+    var emailFrom = process.env.EMAIL_FROMADDR; 
+    
+
+
+        
+   
    
  /**
   * Ensure only authorised viewers can see the settings screen
@@ -60,7 +74,7 @@ exports.settingsHome = function(req, res) {
 console.log('sess.userType = '+sess.userType);
 
  if (sess.userType == '2'){
-    res.render('settings', { title: 'Command Center' + name, username: sess.username, version, env, dbHost, dbName, dbUser, dbPass, ccSSL, port, infileDis, infileLocal, exportSource, certName, certPass, sweep, sweepDir, pictureDir, muster });
+    res.render('settings', { title: 'Command Center' + name, username: sess.username, version, env, dbHost, dbName, dbUser, dbPass, ccSSL, port, infileDis, infileLocal, exportSource, certName, certPass, sweep, sweepDir, pictureDir, muster, emailHost, emailPort, emailSecure, emailUser, emailPass, emailFrom });
     } else {
     res.render('Unauthorized', { title: 'Command Center'});
     }
@@ -128,6 +142,24 @@ exports.settingsUpdate = function(req, res) {
         },
         {
         value: 'CERT_PASSPHRASE="'+req.body.certPassSet+'"'
+        },
+        {
+        value: 'EMAIL_HOST='+req.body.emailHost
+        },
+        {
+        value: 'EMAIL_PORT='+req.body.emailPort
+        },
+        {
+        value: 'EMAIL_SECURE='+req.body.emailSecure
+        },
+        {
+        value: 'EMAIL_USER='+req.body.emailUser
+        },
+        {
+        value: 'EMAIL_PASS='+req.body.emailPass
+        },
+        {
+        value: 'EMAIL_FROMADDR='+req.body.emailFrom
         }];
 
 
@@ -165,9 +197,6 @@ exports.settingsUpdate = function(req, res) {
 //////////////////////////////////////////////////////////////
 exports.settingsRestart = function(req, res) {
   
- /**
-  * crash test
-  */
  sess.success=null;
  process.exit(1)
 };

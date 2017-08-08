@@ -219,13 +219,13 @@ function doInvitation pConId,pDateTime
    if tLogged <> TRUE then get returnFail("Error creating a log entry:" && tLogged)
 
    --deviceHeader
-   put "OB1" into tDeviceType
-   put "001" into tMobssOperator
+   put "OB1?" into tDeviceType
+   put "dunnoyet" into tMobssOperator
    put createDeviceHeader(pConId,tAuthCode,pDateTime,tCurrentStatus,tDeviceType,tMobssOperator) into tDeviceHeader
    if not tDeviceHeader then get returnFail("Error creating an entry in the deviceHeader:" && tDeviceHeader)
 
    --deviceHistory
-   put "Device requesting activation" into tComment
+   put "This is an app posting an empty authCode value" into tComment
    put createDeviceHistory(pConId,tAuthCode,pDateTime,tCurrentStatus,tComment) into tDeviceHistory
    if not tDeviceHistory then get returnFail("Error creating an entry in the deviceHistory:" && tDeviceHistory)
 
