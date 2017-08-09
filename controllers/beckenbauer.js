@@ -36,6 +36,21 @@ module.exports.sweeper = function(callback){
     var expFork = "";
     var strSQL = "";
     var abortSweep = "NO"
+    var sweepTime = new Date()
+
+   //Set up the logging
+   function processLog ( param ) {  
+	   fs.open('./public/reports/sweep.log', 'a', 666, function( e, id ) {
+	    //in some cases appends to the end of the last line rather than on a new line,
+	    //so write a blank line first
+	    //fs.appendFileSync(id, "" + "\r\n", null, 'utf8')
+	    fs.appendFileSync(id, param + "\r\n", null, 'utf8')
+	    fs.close(id, function(){});
+	    
+	    });
+	    
+	    };
+ 
     
     /**
      * Don't do anything if INFILE is disabled and the source is not S2 or OTHER
@@ -54,10 +69,8 @@ module.exports.sweeper = function(callback){
       	encoding: 'utf-8'
     	}, function(err, csvData) {
           if (err) {
-          	emailController.sendIncidentEmail('Sweep Incident!','A batch csv job did not run.  no file in directory.', process.env.FROMADDR, function(err,reslt){
-	        if (err) {console.log('a problem occurred, attempting to email customer support')}
-	        });
-          console.log ('Batch csv job did not run, no file in the directory...'+err)
+          	processLog(sweepTime+" -- FAIL : "+err)
+          	callback("cronjob did not run - no file found in directory", null)
           } else {
 
 
@@ -67,6 +80,7 @@ module.exports.sweeper = function(callback){
 			db.createConnection(function(err,reslt){  
 		        if (err) {
 		          	console.log('No database connection, the batch csv job did not run... ' + err);
+		          	processLog(sweepTime+" -- FAIL : "+err)
 		          	callback(err, null);
 		        }else{
 		        	/**
@@ -110,18 +124,21 @@ module.exports.sweeper = function(callback){
 			          if (err) {
 			            console.log('Error while performing people table clear: ' + err);
 			            connection.end();
+			            processLog(sweepTime+" -- FAIL : "+err)
 			            callback(err, null);
 			          }else{
 			          clearTables.clearAllFromTable(connection, 'accesslevels', function(err,rslt){
 			            if (err) {
 			              console.log('Error while performing accesslevels table clear: ' + err);
-			              connection.end();
+			              connection.end()
+			              processLog(sweepTime+" -- FAIL : "+err)
 			              callback(err, null);
 			            }else{
 			              clearTables.clearAllFromTable(connection, 'empbadge', function(err,rslt){
 			                if (err) {
 			                  console.log('Error while performing empbadge table clear: ' + err);
 			                  connection.end();
+			            	  processLog(sweepTime+" -- FAIL : "+err)
 			                  callback(err, null);
 			                }else{  
 
@@ -157,11 +174,14 @@ module.exports.sweeper = function(callback){
 			           	beckInsert.sweepInsert(csvFileName, function(err,rslt){
 					      if (err) {
 					        console.log('Error while performing beckInsert call : ' + err);
-					          connection.end();
-					          callback(err, null);
+					        connection.end();
+				         	processLog(sweepTime+" -- FAIL : "+err)
+					        callback(err, null);
 					      }else{
-					      	callback(null, "success")
+					      	processLog(sweepTime+" -- OK.")
 					      	connection.end()
+					      	callback(null, "success")
+
 					      }
 					    });
 					   }else{
@@ -180,7 +200,7 @@ module.exports.sweeper = function(callback){
                         	  	strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' (LastName, FirstName, @var1, @dummy, @dummy, @var2, @dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy,@dummy, @dummy,@dummy, @dummy, @dummy,@dummy, @dummy, @dummy, @dummy, imageName ) SET iClassNumber = CONCAT(@var2, @var1), EmpID = CONCAT(@var2, @var1), updateTime ="+_updateTime;
 						          break;
 						       case "ACM":
-						        strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@var1, @var2, @dummy, @dummy, @dummy, @dummy, @dummy, FirstName, LastName, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, EmailAddr, Title, Department, Division, SiteLocation, Building, @dummy, @dummy, iClassNumber ) SET imageName=@var1, EmpID= @var2, Identifier1=@var2, updateTime ="+_updateTime;
+						        strSQL = strPrepend+"'"+csvFileName+"'"+" IGNORE INTO TABLE people FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (@var1, @var2, @dummy, @dummy, @dummy, @dummy, @dummy, FirstName, LastName, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, @dummy, EmailAddr, Title, @dummy, Division, SiteLocation, Building, @dummy, @dummy, iClassNumber ) SET imageName=@var1, EmpID= @var2, Identifier1=@var2, updateTime ="+_updateTime;
 						         break;
 						      default: 
 						        strSQL = strPrepend+"'"+csvFileName+"'"+" INTO TABLE people FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\r\n' IGNORE 1 LINES (empID, LastName, FirstName, title, iClassNumber, imageName) SET  updateTime ="+_updateTime;
@@ -194,8 +214,9 @@ module.exports.sweeper = function(callback){
 			                
 			                   if (err) {
 			                      console.log(err)
-			                      callback(err, 'failed');
+			                      processLog(sweepTime+" -- FAIL : "+err)
 			                      connection.end();
+			                      callback(err, 'failed');
 			                      
 			                    } else {
 			                    ////////////////////////////////////////////////////////////////
@@ -245,11 +266,10 @@ module.exports.sweeper = function(callback){
 
 			                       if (err) {
 			                          console.log(err)
-			                          emailController.sendIncidentEmail('Sweep Incident!','There is a database problem in beckenbauer.', process.env.FROMADDR, function(err,reslt){
-								        if (err) {console.log('a problem occurred, attempting to email customer support')}
-								        });
-			                          callback(err, 'failed');
+
 			                          connection.end();
+			                          processLog(sweepTime+" -- FAIL : "+err)
+			                          callback(err, 'failed');
 			                          
 			                        } else {  
 			                          /**
@@ -301,14 +321,14 @@ module.exports.sweeper = function(callback){
 
 			                             if (err) {
 			                                console.log(err)
-			                                emailController.sendIncidentEmail('Sweep Incident!','There is a database problem in beckenbauer.', process.env.FROMADDR, function(err,reslt){
-										        if (err) {console.log('a problem occurred, attempting to email customer support')}
-										        });
+			                                
+			                                processLog(sweepTime+" -- FAIL : "+err)
 			                                callback(err, 'failed');
 			                                connection.end();
 			                                
-			                              } else {  
-			                               
+			                              } else { 
+
+			                              	processLog(sweepTime+" -- OK.")
 			                                callback(null, 'success');
 			                                connection.end();
 
@@ -334,16 +354,19 @@ module.exports.sweeper = function(callback){
      } // if/else err fs
  }); // end fs callback
 
-}else{callback("cronjob did not run due to INFILE and source", null)} // end check for abort sweep
+}else{processLog(sweepTime+" -- FAIL : "+err); callback("cronjob did not run - INFILE and source conflict", null)} // end check for abort sweep
      	
 
 /////////////////////////////////////////////////////
 //Now process the photos, using the common handler //
 /////////////////////////////////////////////////////
 
-beckPhotos. photoSweep (function( err, result ) {
+beckPhotos.photoSweep (function( err, result ) {
         if( err ) {
-            console.error( "Could not sweep the photos.", err );            
+        	processLog(sweepTime+" -- PHOTO FAIL : "+err)
+            console.error( "Could not sweep the photos.", err );
+            callback(err, 'failed');
+            
         }
 });
 

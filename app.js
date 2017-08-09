@@ -131,12 +131,8 @@ if (process.env.SWEEP_SCHED != "OFF") {
     Six * means runs every second
      */
     //new CronJob('00 46 12 * * 1-5', function() {
-    console.log(process.env.SWEEP_SCHED);
-    console.log(new Date());
 
-    console.log('here is the sweep timer '+ process.env.SWEEP_TIMER);
-
-    new CronJob('0 11 22 * * 0-6', function() {
+    new CronJob('0 54 10 * * 0-6', function() {
 
     //new CronJob('* * * * * *', function() {
         beckenbauer.sweeper(function(err,rslt){

@@ -11,19 +11,34 @@ const nodemailer = require('nodemailer');
 ////////////////////////////////////////////////////////////////////////////
 
 module.exports.sendAttendanceEmail = function(subject, message, to, fileName, callback){
-var smtpConfig = {
+
+
+if (process.env.EMAIL_SECURE == "true"){
+    
+ var smtpConfig = {
     //host: 'smtp.mail.com',
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     secure: process.env.EMAIL_SECURE, // use SSL
     auth: {
         user: process.env.EMAIL_USER,
-        //pass: 'Dragonseat6000!'
         pass: process.env.EMAIL_PASS
     }
 };
+}else{
+ var smtpConfig = {
+    //host: 'smtp.mail.com',
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false, // do NOT use SSL
+    ignoreTLS: true // make sure nothing is using TLS
+}
+}
 
 var transporter = nodemailer.createTransport(smtpConfig);
+
+
+
 
 // setup email data with unicode symbols
 var mailOptions = {

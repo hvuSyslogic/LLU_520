@@ -1,7 +1,7 @@
 Last Name,First Name,Attendance Date,Email,Time In,Time Out,Badge ID,Identifier,
 
-Fitch,Robert,2017-06-01,Robert_Fitch@bcbst.com,03:00,03:30,47442,90800
-Wilson,Beverly,2017-06-01,Beverly_Wilson@BCBST.com,03:00,03:30,31772,129428
-Thompson,William,2017-06-01,William_Thompson@bcbst.com,03:05,03:35,48700,140968
+Fitch,Robert,2017-06-01,,03:00,03:30,47442,
+Wilson,Beverly,2017-06-01,,03:00,03:30,31772,
+Thompson,William,2017-06-01,,03:05,03:35,48700,
 Walden,Michael,2017-06-01,,03:05,03:35,37075,
 

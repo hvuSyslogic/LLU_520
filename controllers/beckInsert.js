@@ -14,8 +14,8 @@ var caller = "sweep"
 
 // Add other source types that require INSERT processing as they occur.
 // If INFILE is disabled (one of the reasons you end up in this module)
-// and it's not S2, this is no current support for sweep. This can be added
-// and directed as neessary to the case statement below.
+// and it's not S2, there is NO current support for sweep. This can be added
+// and directed as necessary to the case statement below.
 
 // First, get 3 connections to use for the INSERT processing to people, empbadge and accesslevels.
 // This will improve performance for very large files.
@@ -43,14 +43,14 @@ var caller = "sweep"
                   }else{
                     //process the i/o after successful connect.  Connection object returned in callback
                     var connectionAL = res3;
-                    console.log('here is the csvImport accesslevels connnection '+res3.threadId);
+                    console.log('here is the csvImport accesslevels connection '+res3.threadId);
 
                     switch (exportSource)
 					    {
 					       case "S2":
 					       
 					        csvImportInsertS2.processInsert (connection, connectionEB, connectionAL, caller, csvFileName, function(err,reslt){
-					        if (err) {console.log('a problem occurred, attempting to call beck insert S2')}
+					        if (err) {console.log('a problem occurred, attempting to call beck insert S2'); callback(err, null)}else{callback(null, "success")}
 					        });
 
 					        break;
