@@ -8,7 +8,7 @@ put $_POST["pass"] into tPass
 put urldecode(tPass) into tPass
 
 if tPass = "agpbrtdk" then
-   put revOpenDatabase("mysql","localhost","mobss","root","HuGTO*@409%u") into tConID
+   put revOpenDatabase("mysql","localhost","mobss5","root","Ibirapuera!") into tConID
    if tConID is a number then
       put "SELECT InvitationListID,ListName,ListComment,updateTime from InviteList order by InvitationListID ASC" into tSQL
       put revDataFromQuery(tab,return,tConID,tSQL) into theList

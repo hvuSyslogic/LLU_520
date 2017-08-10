@@ -22,7 +22,7 @@ command makeItSo
    put getDateTime() into tDateTime
 
    -- need to open the database early to allow for stuff like writing to the Connections table
-   put revOpenDatabase("mysql","localhost","mobss","root","HuGTO*@409%u") into tConId
+   put revOpenDatabase("mysql","localhost","mobss5","root","Ibirapuera!") into tConId
    if tConId is not a number then get returnFail("ERROR: Cannot connect to the server database." && tConId)
 
    --Challenge 1
