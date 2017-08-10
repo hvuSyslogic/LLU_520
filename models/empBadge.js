@@ -20,15 +20,40 @@ exports.createEmpBadge = function(connectionEB, badgeID, empID, status, callback
                     var _EmpID = field2;
                     var _iClassNumber = field1;
 
-                    if (status == "Active"){
-                      var _StatusID = '1';
-                      var _StatusName = 'Active';
-                    }else{
-                      var _StatusID = '2'
-                      var _StatusName = 'Inactive';
+                   switch (status)
+                    {
+                      case "Active":
+                        var _StatusID = '1';
+                        var _StatusName = 'Active';
+                        break;
+                      case "Expired":
+                        var _StatusID = '2';
+                        var _StatusName = 'Expired';
+                        break;
+                      case "Suspended":
+                        var _StatusID = '2';
+                        var _StatusName = 'Suspended';
+                        break;
+                      case "Disabled":
+                        var _StatusID = '2';
+                        var _StatusName = 'Disabled';
+                        break;
+                      case "Damaged":
+                        var _StatusID = '2';
+                        var _StatusName = 'Damaged';
+                        break;
+                      case "Lost":
+                        var _StatusID = '2';
+                        var _StatusName = 'Lost';
+                        break;
 
+                      default: 
+                        var _StatusID = '2';
+                        var _StatusName = 'Inactive';
                     }
                     
+                    
+
                     var _d = new Date();
                     var _t = _d.getTime(); 
                     var _updateTime = _t;

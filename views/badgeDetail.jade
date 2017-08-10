@@ -1,0 +1,27 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            
+            div
+                form.form-horizontal(method='post')
+                    fieldset
+                        legend Badge details
+                        .form-group
+                            label.col-lg-2.control-label(for='disabledInput') Badge number
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', Type='text', name='badgeID', value=result[0].iClassNumber)
+                            label.col-lg-2.control-label(for='disabledInput') Current status
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', Type='text', name='currentStatus', value=result[0].StatusName)
+                        .form-group
+                            label.col-lg-2.control-label(for='disabledInput') Last name
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', type='text', placeholder='', name='lastName', value='#{lastName}')
+                            label.col-lg-2.control-label(for='disabledInput') First name
+                            .col-lg-10
+                                input#disabledInput.form-control(disabled='', type='text', placeholder='', name='firstName', value='#{firstName}')
+                       
+               

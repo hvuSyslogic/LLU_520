@@ -110,13 +110,13 @@ exports.insertInvite = function(connection, csvFileName, listName, listComment, 
 /////////////////////////////////////////////////////////////////////////////
 
 exports.insertPeople = function(csvFileName, callback) {
-  //sess.success = null;
- // sess.error = null;
+  
+ // NOTE: will need to add "caller" toggles if the sweep ever requires INSERT other that S2 (which is handled in 
+ // csvImportInsertS2.js.  Thats because the sesss object may not be available to the sweep)
   var strSQL = "";
   var query = null;
   sess.error = null;
 
-  console.log('INSERT PEOPLE HANDLER')
 
   /**
    * Use a different connection for each table for faster inserts
@@ -174,7 +174,8 @@ exports.insertPeople = function(csvFileName, callback) {
                        * First determine the format of the csv file.
                        * Current options are:
                        * - S2 (insert only)
-                       * - mobss-stipulated (insert of infile)
+                       * - mobss-stipulated (insert or infile)
+                       * - ACM - (infile only)
                        * - AMAG (infile only)
                        */
 

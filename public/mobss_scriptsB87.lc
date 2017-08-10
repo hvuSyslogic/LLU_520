@@ -1,0 +1,347 @@
+<?lc
+-- 2017-07-27
+-- for use in CommandCenter 5 (node.js)
+-- plain-text authCode challenge to be added
+
+makeItSo
+
+command makeItSo
+   put header "Content-Type: text/html" & NumToChar(13)
+   put FALSE into tProceed
+   put FALSE into tLog
+   put $_POST["pass"] into tPass
+   put $_POST["authCode"] into tAuthCode
+   put $_POST["data"] into tData
+   put $_POST["action"] into tAction
+   put urldecode(tPass) into tPass
+   put urldecode(tAuthCode) into tAuthCode
+   put urldecode(tData) into tData
+   put urldecode(tAction) into tAction
+
+   -- format dateTime value nicely for MySQL
+   put getDateTime() into tDateTime
+
+   -- need to open the database early to allow for stuff like writing to the Connections table
+   put revOpenDatabase("mysql","localhost","mobss","root","ms_root_XS12") into tConId
+   if tConId is not a number then get returnFail("ERROR: Cannot connect to the server database." && tConId)
+
+   --Challenge 1
+   if tAction = "auth" then
+      if tPass <> "agpbrtdk" then get returnFail("password",tConId,tAuthCode,tDateTime,tCurrentStatus)
+   end if
+
+   --AMEND USERS FOR TEST PURPOSES
+   --put "UPDATE DeviceHeader SET currentStatus='" & 3 & "'" && "WHERE AuthCode='" & tAuthCode & "'" into tSQL
+   --revExecuteSQL tConId,tSQL
+   --put "Error: amended table for" && tAuthCode
+
+
+   --Challenge 2.2 invitation
+   if tAuthCode is empty then
+      put doInvitation(tConId,tDateTime) into tInvited
+      if word 1 of tInvited = "Success" then
+         put tInvited
+      else
+         get returnFail(tInvited)
+      end if
+   else
+
+      -- Check for a match against authCode
+      put "SELECT * from DeviceHeader WHERE AuthCode='" & tAuthCode & "'" into tSQL
+      put revDataFromQuery(tab,return,tConId,tSQL) into tRecords
+
+      -- if cannot connect to the 'DeviceHeader' db table
+      if the first item of tRecords = "revdberr" then -- start if.tRecords
+         put "ERROR: Cannot connect to 'DeviceHeader' table - " && tRecords into tErrorMessage
+         get returnFail(tErrorMessage)
+      end if
+
+      -- if there is no match for the authCode sent up by the device
+      if tRecords is empty then -- start if.tRecords
+         if tAction = "auth" then
+            get returnFail("authCode",tConId,tAuthCode,tDateTime,tCurrentStatus) -- Challenge 2.3
+         end if
+
+      -- if the authCode from the device matches one in 'DeviceHeader'
+      else
+         set itemdel to tab
+         put item 1 of tRecords into tAuthCodeFromCC5
+         put item 2 of tRecords into tDateIssued
+         put item 3 of tRecords into tConnectionAttemptCount
+         put item 4 of tRecords into tLastConnect
+         put item 5 of tRecords into tCurrentStatus -- 1=white, 2=black, 3=grey
+         put item 6 of tRecords into tDeviceType
+         put item 7 of tRecords into tMobssOperator
+         set itemdel to comma
+
+         if tAction = "auth" then
+            if tCurrentStatus = 0 then get returnFail("statusUnconfirmed",tConId,tAuthCode,tDateTime,tCurrentStatus) --Challenge 3.2
+            if tCurrentStatus = 2 then get returnFail("statusDeactivated",tConId,tAuthCode,tDateTime,tCurrentStatus) --Challenge 3.2
+            if tCurrentStatus = 3 then get returnFail("statusBlacklisted",tConId,tAuthCode,tDateTime,tCurrentStatus)-- Challenge 3.2
+         end if
+         put TRUE into tProceed
+         put TRUE into tLog
+      end if -- start if.tRecords
+   end if -- end if.tAuthCode
+
+
+   --log actions to the Connections table if required
+   if tLog = TRUE AND tAction <> "checkLog" then -- start if.tLog
+      put logEntry(tConId,tAuthCode,tDateTime,tCurrentStatus) into tLogged
+      if tLogged <> TRUE then
+         get returnFail(tLogged)
+      end if
+   end if -- end if.tLog
+
+
+
+
+   -- proceed if required
+   if tProceed = TRUE then -- start if.tProceed
+
+      switch tAction -- take appropriate action...
+
+         case "auth"
+            put "SUCCESS TRUE"
+            break
+
+         case "verifyConnection"
+            put $_SERVER into tServerA
+            put tServerA["HTTP_HOST"] into tHost
+            put "Connected to" && tHost & cr & \
+                  "at" && tDateTime into tString
+            put "SUCCESS" && tString
+            break
+
+         case "checkStatus"
+            put "DateTime:" && tDateTime & cr & \
+                  "authCode:" && tAuthCode & cr & \
+                  "authCodeFromCC5:" && tAuthCodeFromCC5 & cr & \
+                  "matchingAuthCodes:" && TRUE & cr & \
+                  "currentStatus:" && tCurrentStatus & cr & \
+                  "proceed:" && tProceed into tString
+            put "SUCCESS" && tString
+            break
+
+			case "checkLog"
+            put checkLog(tConId) into tRecords
+            if word 1 of tRecords = "Success" then put word 2 to -1 of tRecords
+            else get returnFail(tRecords)
+				break
+
+         case "sendAttendance"
+            put 0 into tRecords
+            put empty into tError
+            put "attendance" into tTable
+            put "MobSSID,EmpID,iClassNumber,FirstName, LastName, InTIme, OutTIme,InSeconds,OutSeconds,EventID,EventName,AttendDate,MobSSOperator,RecordStatus" into tFields
+
+            repeat with i = 1 to the number of lines in tData
+               set itemdel to tab
+               put line i of tData into tLine
+               put item 1 of tLine into tMobSSID
+               put item 2 of tLine into tEmpID
+               put item 3 of tLine into tiClassNumber
+               put item 4 of tLine into tFirstName
+               put item 5 of tLine into tLastName
+               put item 6 of tLine into tInTIme
+               put item 7 of tLine into tOutTIme
+               put item 8 of tLine into tInSeconds
+               put item 9 of tLine into tOutSeconds
+               put item 10 of tLine into tEventID
+               put item 11 of tLine into tEventName
+               put item 12 of tLine into tAttendDate
+               put item 13 of tLine into tMobSSOperator
+               put item 14 of tLine into tRecordStatus
+
+               set itemdel to comma
+               put "INSERT INTO" && tTable && "(" & tFields & ") VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14);" into tSQL
+               revExecuteSQL tConId, tSQL, "tMobSSID", "tEmpID", "tiClassNumber", "tFirstName", "tLastName", "tInTIme", "tOutTIme", "tInSeconds", "tOutSeconds", "tEventID" , "tEventName", "tAttendDate", "tMobSSOperator", "tRecordStatus"
+               if the result is a number then
+                  add the result to tRecords
+               else
+                  put the result into tError
+               end if
+            end repeat
+
+            if tError is empty then put "SUCCESS" && tRecords
+            else get returnFail("ERROR" && tError && tRecords)
+            break
+
+      end switch
+   end if
+
+   revCloseDatabase tConId
+
+end makeItSo
+
+
+
+
+function logEntry pConId,pAuthCode,pDateTime,pCurrentStatus
+   put empty into tError
+   put "AuthCode,ConnectionAttemptTime,Result" into tFields
+   put "INSERT INTO Connections (" & tFields & ") VALUES (:1, :2, :3);" into tSQL
+   revExecuteSQL pConID, tSQL, "pAuthCode", "pDateTime", "pCurrentStatus"
+   put the result into tLogResult
+   if tLogResult is a number then return TRUE
+   else return "Error:" && tLogResult
+end logEntry
+
+
+
+
+function checkLog pConId
+   put "SELECT AuthCode,ConnectionAttemptTime,Result from Connections ORDER BY ConnectionAttemptTime DESC LIMIT 5" into tSQL
+   put revDataFromQuery(tab,return,pConId,tSQL) into tRecords
+
+   -- if cannot connect to the 'Connections' db table
+   if the first item of tRecords = "revdberr" then -- start if.tRecords
+      return "Error: cannot connect to 'Connections' table - " && tRecords
+
+      -- if the 'Connections' db table is empty
+   else if tRecords is empty then
+      return "Error: No data in 'Connections' table"
+
+      -- good data is returned
+   else if tRecords is not empty then
+      return "Success" && tRecords
+   end if
+end checkLog
+
+
+
+function doInvitation pConId,pDateTime
+   put getFakeUuid() into tAuthCode
+   put 0 into tCurrentStatus
+
+   --log
+   put logEntry(pConId,tAuthCode,pDateTime,tCurrentStatus) into tLogged
+   if tLogged <> TRUE then get returnFail("Error creating a log entry:" && tLogged)
+
+   --deviceHeader
+   put "OB1?" into tDeviceType
+   put "dunnoyet" into tMobssOperator
+   put createDeviceHeader(pConId,tAuthCode,pDateTime,tCurrentStatus,tDeviceType,tMobssOperator) into tDeviceHeader
+   if not tDeviceHeader then get returnFail("Error creating an entry in the deviceHeader:" && tDeviceHeader)
+
+   --deviceHistory
+   put "This is an app posting an empty authCode value" into tComment
+   put createDeviceHistory(pConId,tAuthCode,pDateTime,tCurrentStatus,tComment) into tDeviceHistory
+   if not tDeviceHistory then get returnFail("Error creating an entry in the deviceHistory:" && tDeviceHistory)
+
+   put "Success: Code #2.2" && tAuthCode into tMessage
+   return tMessage
+
+end doInvitation
+
+
+
+
+function getFakeUuid
+   put 36 into tNum
+   put "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW0123456789" into tSeed
+   put empty into tList
+   repeat with i = 1 to tNum
+      put char (random(59)) of tSeed after tList
+   end repeat
+   return tList
+end getFakeUuid
+
+
+
+
+function createDeviceHeader pConId,pAuthCode,pDateTime,pCurrentStatus,pDeviceType,pMobssOperator
+   put 1 into tConnectionAttemptCount
+   put "AuthCode,DateIssued,ConnectionAttemptCount,LastConnect,CurrentStatus,DeviceType,MobssOperator" into tFields
+   put "INSERT INTO DeviceHeader (" & tFields & ") VALUES (:1, :2, :3, :4, :5, :6, :7);" into tSQL
+   revExecuteSQL pConID, tSQL, "pAuthCode", "pDateTime", "tConnectionAttemptCount", "pDateTime", "pCurrentStatus", "pDeviceType", "pMobssOperator"
+   put the result into tResult
+   if tResult is a number then return TRUE
+   else return "Error:" && tResult
+end createDeviceHeader
+
+
+
+
+
+function createDeviceHistory pConId,pAuthCode,pDateTime,pCurrentStatus,pComment
+   put "AuthCode,Status,StatusDate,StatusChangeComment" into tFields
+   put "INSERT INTO DeviceHistory (" & tFields & ") VALUES (:1, :2, :3, :4);" into tSQL
+   revExecuteSQL pConID, tSQL, "pAuthCode", "pCurrentStatus", "pDateTime", "pComment"
+   put the result into tResult
+   if tResult is a number then return TRUE
+   else return "Error:" && tResult
+end createDeviceHistory
+
+
+
+
+function returnFail pFailType,pConId,pAuthCode,pDateTime,pCurrentStatus
+
+   switch pFailType
+      case "password"
+         put "Error: restricted access - unauthorised access attempt (code #1.1)" into tMessage
+         put logEntry(pConId,pAuthCode,pDateTime,pCurrentStatus) into tLogged
+         break
+
+      case "authCode" -- 2.1 code = lockdown command to the app
+         put "Error: restricted access - unauthorised access attempt (code #2.1)" into tMessage
+         put logEntry(pConId,pAuthCode,pDateTime,pCurrentStatus) into tLogged
+         break
+
+      case "statusUnconfirmed"
+         put "Error: restricted access - insecure device status (code #3.0)" into tMessage
+         put logEntry(pConId,pAuthCode,pDateTime,pCurrentStatus) into tLogged
+         break
+
+      case "statusDeactivated"
+         put "Error: restricted access - insecure device status (code #3.1)" into tMessage
+         put logEntry(pConId,pAuthCode,pDateTime,pCurrentStatus) into tLogged
+         break
+
+      case "statusBlacklisted" --3.2 code = destruct command to the app
+         put "Error: restricted access - insecure device status (code #3.2)" into tMessage
+         put logEntry(pConId,pAuthCode,pDateTime,pCurrentStatus) into tLogged
+         break
+
+      default
+         put pFailType into tMessage
+
+   end switch
+
+   if tMessage is empty then put "Unauthorised use of the" && tAction && "action" into tMessage
+   put tMessage
+   if pConId is a number then revCloseDatabase pConId
+   exit to top
+end returnFail
+
+
+
+
+
+function getDateTime
+   put the seconds into tDateTime
+   convert tDateTime to dateItems -- e.g. 2017,7,11,19,19,43,3
+   put item 1 to 3 of tDateTime into tDate
+   put item 4 to -2 of tDateTime into tTime
+   put prependZero(item 2 of tDate) into item 2 of tDate -- months
+   put prependZero(item 3 of tDate) into item 3 of tDate -- days
+   replace "," with "-" in tDate
+   --
+   put prependZero(item 1 of tTime) into item 1 of tTime -- hours
+   put prependZero(item 2 of tTime) into item 2 of tTime -- mins
+   put prependZero(item 3 of tTime) into item 3 of tTime -- secs
+   replace "," with ":" in tTime
+	--
+   return tDate && tTime
+end getDateTime
+
+
+
+
+function prependZero pNum
+   if the len of pNum = 1 then put 0 before pNum
+   return pNum
+end prependZero
+
+?>

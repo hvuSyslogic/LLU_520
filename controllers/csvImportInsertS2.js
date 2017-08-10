@@ -77,19 +77,19 @@ exports.processInsert = function(connection, connectionEB, connectionAL, caller,
                   
                    
                     console.log ("The csv parse " +JSON.stringify(data[i][5]))
-                    firstName = data[i][4];
-                    lastName = data[i][3];
+                    firstName = data[i][5];
+                    lastName = data[i][6];
                     badgeNumber = 0;
                     title = "";
                     empID = data[i][1];
-                    image = data[i][6];
+                    image = data[i][7];
 
                     /**
                      * Isolate all the badge credential substrings (delimited by pipe |)
                      * from the main credential field.
                      * This will produce an arrray where each row is an individual badge
                      */
-                    var credStr = data[i][5];
+                    var credStr = data[i][4];
                   
                     var credArr = credStr.split("|");
                     console.log ("The pipe parse "+JSON.stringify(credArr))

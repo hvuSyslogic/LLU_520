@@ -12,6 +12,7 @@ block content
                 table#pickle.table.table-hover.table-striped.table-bordered
                     thead
                         tr.warning
+                            th
                             th Last Name
                             th First Name
                             th Cardnumber
@@ -22,6 +23,8 @@ block content
                     tbody
                         -each result in results
                             tr
+                                    td
+                                        a(href="/badgeDetail/#{result.iClassNumber}") Badge Detail
                                     td=result.LastName
                                     td=result.FirstName
                                     td=result.iClassNumber

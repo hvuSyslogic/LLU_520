@@ -103,7 +103,7 @@ exports.csvIngest = function(req, res) {
                  break;
 
               default: 
-                 if (fileExtension != '.csv'){
+                 if (fileExtension != '.csv' && fileExtension != '.CSV'){
                       sess.error = 'Invalid file type -- "'+csvFileName+'" -- Import files should be .csv';
                       res.render('csv', { title: 'Command Center', username: sess.username, success: sess.success });
                      }

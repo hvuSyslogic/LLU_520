@@ -5,6 +5,8 @@ var csv = require('../controllers/csv');
 var photos = require('../controllers/photos');
 var invites = require('../controllers/invites');
 var cardholders = require('../controllers/cardholders');
+var badges = require('../controllers/badges');
+
 var events = require('../controllers/events');
 var devices = require('../controllers/devices');
 var connections = require('../controllers/connections');
@@ -46,6 +48,13 @@ router.post('/photoCheck', photos.photoCheckProcess);
 // show general pagesrouter.get('/photoCheck', photos.photoCheck);
 // show cardholders page
 router.get('/cardholders', cardholders.cardholdersHome);
+router.get('/badgeDetail/:badgeID', badges.badgesGetOne);
+router.get('/badges', badges.badgesHome);
+router.get('/badgesActive', badges.badgesActive);
+router.get('/badgesInactive', badges.badgesInactive);
+
+
+
 
 // Routes for EVENTS
 // show events list

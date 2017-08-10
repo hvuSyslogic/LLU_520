@@ -1,0 +1,41 @@
+include mixins
+extends layout
+block content   
+
+            include navbar
+
+            
+            h3 List of inactive badges
+            br
+
+            div
+                table#pickle.table.table-hover.table-striped.table-bordered
+                    thead
+                        tr.warning
+                            th Badge number
+                            th Status
+                            th Employee Id
+                    tbody
+                        -each result in results
+                            tr
+                                    td=result.iClassNumber
+                                    td=result.StatusName
+                                    td=result.EmpID
+           
+
+                 script.
+                    $(document).ready(function() {
+                    $('#pickle').DataTable();
+                    }); 
+                
+
+
+ 
+        
+    
+ 
+
+
+
+
+    
